@@ -68,6 +68,10 @@
             requests: s.requests_today
           }) }}
         </p>
+        <p class="pulse-note">
+          {{ msg('pulseNote') }}
+          <a routerLink="/faq" fragment="faq-pulse" data-testid="pulse-faq">{{ msg('pulseFaqLink') }}</a>
+        </p>
       }
       @if (voteThanks()) {
         <p class="share-status" role="status">{{ msg('likeThanks') }}</p>

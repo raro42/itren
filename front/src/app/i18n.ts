@@ -65,6 +65,12 @@ const dict = {
     faqPrivacyQ: 'Do I need an account?',
     faqPrivacyA:
       'No. Last trip and favorites stay in your browser. “I’m here” uses location once to set origin and is not tied to a server login.',
+    faqPulseQ: 'What do you track?',
+    faqPulseA:
+      'Very little. Soft pulse only: a random id in your browser (localStorage), hashed on the server. We count unique browsers today, returning ones (same id seen on an earlier day), API requests today, and optional like/dislike. Trip feedback buttons are soft counts too. We do not use accounts, emails, ads, analytics suites, or IP-based visitor identity. Test/headless browsers are skipped. Location for “I’m here” is not stored as a visit profile.',
+    faqKpiQ: 'What numbers matter?',
+    faqKpiA:
+      'Keep it small: (1) visitors today, (2) returning visitors, (3) likes vs not really, (4) whether the board stayed honest (live vs timetable). Not a vanity dashboard. If returning grows and likes hold, the platform tool is useful.',
     faqInstallQ: 'Can I download it as an app?',
     faqInstallA:
       'Not from the App Store or Play Store. It is a website you can install on your phone: open itren in the browser → browser menu → Add to Home Screen (or Install app). You get an icon, faster open, no account. Works best on Android Chrome; on iPhone use Safari → Share → Add to Home Screen.',
@@ -105,7 +111,9 @@ const dict = {
     likeStats: '{{likes}} like it · {{dislikes}} do not',
     usageTitle: 'Usage (anonymous)',
     usageLine:
-      'Today: {{visitors}} visitors ({{returning}} returning) · {{requests}} API requests',
+      'Today: {{visitors}} browsers ({{returning}} returning) · {{requests}} API requests',
+    pulseNote: 'Anonymous browser id in localStorage only. No accounts. Details in FAQ.',
+    pulseFaqLink: 'What we track',
     liveBannerLive: 'Live delays matched for at least one train.',
     liveBannerLiveAge: 'Live data updated {{age}} ago. Delays matched for at least one train.',
     liveBannerTimetable:
@@ -200,6 +208,12 @@ const dict = {
     faqPrivacyQ: '¿Hace falta una cuenta?',
     faqPrivacyA:
       'No. El último viaje y los favoritos se quedan en tu navegador. “Estoy aquí” usa la ubicación una vez para el origen y no va ligada a un login en el servidor.',
+    faqPulseQ: '¿Qué medís?',
+    faqPulseA:
+      'Muy poco. Solo pulso suave: un id aleatorio en tu navegador (localStorage), hasheado en el servidor. Contamos navegadores únicos hoy, recurrentes (mismo id visto otro día), peticiones API hoy, y like / no mucho opcionales. Los botones de feedback del tren son conteos suaves. Sin cuentas, emails, anuncios, suites de analítica, ni identidad de visitante por IP. Los navegadores de test/headless no cuentan. La ubicación de “Estoy aquí” no se guarda como perfil de visita.',
+    faqKpiQ: '¿Qué números importan?',
+    faqKpiA:
+      'Pocos: (1) visitantes hoy, (2) recurrentes, (3) likes vs no mucho, (4) que el panel siga siendo honesto (vivo vs horario). No es un dashboard de vanidad. Si crecen los recurrentes y aguantan los likes, la herramienta del andén sirve.',
     faqInstallQ: '¿Se puede descargar como app?',
     faqInstallA:
       'No en App Store ni Play Store. Es una web que puedes instalar en el móvil: abre itren en el navegador → menú → Añadir a pantalla de inicio (o Instalar app). Queda un icono, abre más rápido, sin cuenta. En Android Chrome va bien; en iPhone usa Safari → Compartir → Añadir a pantalla de inicio.',
@@ -240,7 +254,9 @@ const dict = {
     likeStats: '{{likes}} les gusta · {{dislikes}} no',
     usageTitle: 'Uso (anónimo)',
     usageLine:
-      'Hoy: {{visitors}} visitantes ({{returning}} recurrentes) · {{requests}} peticiones API',
+      'Hoy: {{visitors}} navegadores ({{returning}} recurrentes) · {{requests}} peticiones API',
+    pulseNote: 'Solo id anónimo en localStorage. Sin cuentas. Detalle en el FAQ.',
+    pulseFaqLink: 'Qué medimos',
     liveBannerLive: 'Retrasos en vivo coinciden con al menos un tren.',
     liveBannerLiveAge: 'Datos en vivo actualizados hace {{age}}. Retrasos coinciden con al menos un tren.',
     liveBannerTimetable:
@@ -335,6 +351,12 @@ const dict = {
     faqPrivacyQ: 'Cal un compte?',
     faqPrivacyA:
       'No. El darrer viatge i els preferits es queden al navegador. “Sóc aquí” usa la ubicació un cop per a l’origen i no va lligada a un login al servidor.',
+    faqPulseQ: 'Què mesureu?',
+    faqPulseA:
+      'Molt poc. Només puls suau: un id aleatori al navegador (localStorage), hashejat al servidor. Contem navegadors únics avui, recurrents (mateix id vist un altre dia), peticions API avui, i like / no gaire opcionals. Els botons de feedback del tren són recomptes suaus. Sense comptes, emails, anuncis, suites d’analítica, ni identitat de visitant per IP. Els navegadors de test/headless no conten. La ubicació de “Sóc aquí” no es guarda com a perfil de visita.',
+    faqKpiQ: 'Quins números importen?',
+    faqKpiA:
+      'Pocs: (1) visitants avui, (2) recurrents, (3) likes vs no gaire, (4) que el panell segueixi sent honest (viu vs horari). No és un dashboard de vanitat. Si creixen els recurrents i aguanten els likes, l’eina de l’andana serveix.',
     faqInstallQ: 'Es pot descarregar com a app?',
     faqInstallA:
       'No a l’App Store ni al Play Store. És una web que pots instal·lar al mòbil: obre itren al navegador → menú → Afegeix a la pantalla d’inici (o Instal·la l’app). Queda una icona, obre més ràpid, sense compte. A Android Chrome va bé; a l’iPhone usa Safari → Comparteix → Afegeix a la pantalla d’inici.',
@@ -375,7 +397,9 @@ const dict = {
     likeStats: '{{likes}} els agrada · {{dislikes}} no',
     usageTitle: 'Ús (anònim)',
     usageLine:
-      'Avui: {{visitors}} visitants ({{returning}} recurrents) · {{requests}} peticions API',
+      'Avui: {{visitors}} navegadors ({{returning}} recurrents) · {{requests}} peticions API',
+    pulseNote: 'Només id anònim a localStorage. Sense comptes. Detall al FAQ.',
+    pulseFaqLink: 'Què mesurem',
     liveBannerLive: 'Retards en viu coincideixen amb almenys un tren.',
     liveBannerLiveAge: 'Dades en viu actualitzades fa {{age}}. Retards coincideixen amb almenys un tren.',
     liveBannerTimetable:

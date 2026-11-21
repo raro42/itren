@@ -308,10 +308,18 @@
 }
 
 .pulse-stats,
-.pulse-usage {
+.pulse-usage,
+.pulse-note {
   margin: 0.45rem 0 0;
   font-size: 0.8rem;
   color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.pulse-note a {
+  color: var(--color-secondary);
+  font-weight: 600;
+  margin-left: 0.25rem;
 }
 
 .footer-nav {
