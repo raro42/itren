@@ -2,6 +2,7 @@
 
 const LS_VISITOR = 'itren.visitor';
 const LEGACY = 'yonose.visitor';
+const LS_PULSE_OFF = 'itren.pulse';
 
 function randomId(): string {
   const bytes = new Uint8Array(16);
@@ -20,4 +21,21 @@ export function getVisitorId(): string {
   } catch {
     return randomId();
   }
+}
+
+/** Soft pulse only. Skip smoke / headless / explicit test browsers. */
+export function shouldCountVisit(): boolean {
+  try {
+    if (typeof navigator !== 'undefined' && (navigator as Navigator & { webdriver?: boolean }).webdriver) {
+      return false;
+    }
+    const ua = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
+    if (/HeadlessChrome|Playwright|Puppeteer/i.test(ua)) return false;
+    const q = new URLSearchParams(window.location.search);
+    if (q.get('itren_test') === '1' || q.get('pulse') === '0') return false;
+    if (localStorage.getItem(LS_PULSE_OFF) === 'off') return false;
+  } catch {
+    /* count if checks fail */
+  }
+  return true;
 }

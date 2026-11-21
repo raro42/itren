@@ -6,7 +6,7 @@ import { environment } from '../environments/environment';
 import { LangService } from './lang.service';
 import { Lang, MsgKey } from './i18n';
 import { shareWithFriend } from './share';
-import { getVisitorId } from './visitor';
+import { getVisitorId, shouldCountVisit } from './visitor';
 
 type PublicStats = {
   day: string;
@@ -60,10 +60,11 @@ export class AppComponent implements OnInit {
     });
     // Soft metrics after first paint so LCP is not blocked on /visit + /stats.
     this.whenIdle(() => {
-      const visitor = getVisitorId();
-      this.http.post(`${environment.apiBase}/visit`, { visitor_id: visitor }).subscribe({
-        error: () => undefined,
-      });
+      if (shouldCountVisit()) {
+        this.http
+          .post(`${environment.apiBase}/visit`, { visitor_id: getVisitorId() })
+          .subscribe({ error: () => undefined });
+      }
       this.refreshStats();
     });
     try {
