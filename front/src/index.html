@@ -1,14 +1,15 @@
 <!doctype html>
-<html lang="en">
+<html lang="ca">
 <head>
   <meta charset="utf-8">
-  <title>itren · honest next Rodalies train while you wait</title>
+  <title>itren · el proper tren Rodalies de veritat mentre esperes</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#032047">
   <meta name="color-scheme" content="light dark">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="itren shows the next real Rodalies train while you wait: honest delay, wait or leave. Private project by Ralf Roeber. Data: Renfe Operadora (CC BY 4.0).">
+  <!-- Share / crawler text: Catalan first (WhatsApp scrapes these static tags, not the in-app language). -->
+  <meta name="description" content="itren: el proper tren Rodalies de veritat mentre esperes. Retard honest, esperar o marxar. Projecte privat de Ralf Roeber. Dades: Renfe Operadora (CC BY 4.0).">
   <meta name="author" content="Ralf Roeber">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,29 +17,29 @@
   <meta name="apple-mobile-web-app-title" content="itren">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="canonical" href="https://itren.zeitfenster.de/">
-  <link rel="alternate" hreflang="en" href="https://itren.zeitfenster.de/">
-  <link rel="alternate" hreflang="es" href="https://itren.zeitfenster.de/">
   <link rel="alternate" hreflang="ca" href="https://itren.zeitfenster.de/">
+  <link rel="alternate" hreflang="es" href="https://itren.zeitfenster.de/">
+  <link rel="alternate" hreflang="en" href="https://itren.zeitfenster.de/">
   <link rel="alternate" hreflang="x-default" href="https://itren.zeitfenster.de/">
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="itren">
-  <meta property="og:title" content="itren · honest next Rodalies train">
-  <meta property="og:description" content="Next real train, honest delay, wait or leave. For the Rodalies platform when the board goes blank.">
+  <meta property="og:title" content="itren · el proper tren Rodalies de veritat">
+  <meta property="og:description" content="Proper tren real, retard honest, esperar o marxar. Per a l’andana de Rodalies quan el panell queda en blanc.">
   <meta property="og:url" content="https://itren.zeitfenster.de/">
-  <meta property="og:image" content="https://itren.zeitfenster.de/og-itren.png">
+  <meta property="og:image" content="https://itren.zeitfenster.de/og-itren-ca.png">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="itren">
-  <meta property="og:locale" content="en_GB">
+  <meta property="og:locale" content="ca_ES">
   <meta property="og:locale:alternate" content="es_ES">
-  <meta property="og:locale:alternate" content="ca_ES">
+  <meta property="og:locale:alternate" content="en_GB">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="itren · honest next Rodalies train">
-  <meta name="twitter:description" content="Next real train, honest delay, wait or leave. Private project by Ralf Roeber.">
-  <meta name="twitter:image" content="https://itren.zeitfenster.de/og-itren.png">
+  <meta name="twitter:title" content="itren · el proper tren Rodalies de veritat">
+  <meta name="twitter:description" content="Proper tren real, retard honest, esperar o marxar. Projecte privat de Ralf Roeber.">
+  <meta name="twitter:image" content="https://itren.zeitfenster.de/og-itren-ca.png">
 
   <!-- New filenames (itren.*) bust the old yonose “y” favicon / share cache. -->
   <link rel="icon" href="/itren.svg" type="image/svg+xml">
@@ -56,8 +57,8 @@
     "applicationCategory": "TravelApplication",
     "operatingSystem": "Web",
     "isAccessibleForFree": true,
-    "inLanguage": ["en", "es", "ca"],
-    "description": "Honest next Rodalies train while you wait: schedule, live delay when available, wait or leave.",
+    "inLanguage": ["ca", "es", "en"],
+    "description": "El proper tren Rodalies de veritat mentre esperes: horari, retard en viu quan hi és, esperar o marxar.",
     "author": {
       "@type": "Person",
       "name": "Ralf Roeber"
@@ -67,7 +68,7 @@
       "name": "Ralf Roeber"
     },
     "license": "https://github.com/raro42/itren",
-    "image": "https://itren.zeitfenster.de/og-itren.png"
+    "image": "https://itren.zeitfenster.de/og-itren-ca.png"
   }
   </script>
   <style>
@@ -83,16 +84,16 @@
   <app-root>
     <div id="boot-shell" data-testid="boot-shell">
       <p class="brand">itren</p>
-      <h1>Honest next train while you wait.</h1>
+      <h1>El proper tren de veritat mentre esperes.</h1>
       <p>
-        Board blank. App said on time. You waited anyway. itren is for that Rodalies platform moment:
-        next real train, honest delay, wait or leave.
+        Panell en blanc. L’app deia puntual. Tu continuaves allà. itren és per a aquella andana de Rodalies:
+        proper tren real, retard honest, esperar o marxar.
       </p>
       <p>
-        Pick origin and destination, then show next trains. Catalan, Spanish, English. Free.
-        Private project by Ralf Roeber.
+        Tria origen i destí, i mira els propers trens. Català, castellà, anglès. Gratis.
+        Projecte privat de Ralf Roeber.
       </p>
-      <p class="muted">Data: Renfe Operadora (CC BY 4.0), full Cercanías / Rodalies GTFS. Direct trains only. FAQ on the site. Open source on GitHub.</p>
+      <p class="muted">Dades: Renfe Operadora (CC BY 4.0), GTFS complet de Cercanías / Rodalies. Només trens directes. FAQ al lloc. Codi obert a GitHub.</p>
       <noscript>
         <p role="alert">JavaScript is required to load live departures. The page shell above still describes the product.</p>
       </noscript>
