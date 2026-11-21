@@ -334,8 +334,14 @@ step_004_handoff() {
   base="$(basename "$task")"
   issue_n="$(issue_num_from_task "$base")"
   already_complete=0
+  already_deferred=0
   grep -qE '^[[:space:]]*-?[[:space:]]*Handoff:[[:space:]]*complete' "$task" && already_complete=1
+  grep -qE '^[[:space:]]*-?[[:space:]]*Handoff:[[:space:]]*deferred' "$task" && already_deferred=1
   echo "----- 004: handoff ${base}"
+  if [[ "$already_deferred" -eq 1 ]]; then
+    echo "----- 004: already deferred; leaving issue open"
+    return 0
+  fi
   if [[ "$already_complete" -ne 1 ]]; then
     ./scripts/gh-safe.sh issue comment "$issue_n" --body "Agent 004: closing review + changelog (\`${base}\`)." 2>/dev/null || true
     run_cursor "004" \
