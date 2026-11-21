@@ -1,7 +1,8 @@
 <div class="home">
   <div class="home-ask">
-    <section class="trip" aria-labelledby="trip-heading">
+    <section class="trip" aria-labelledby="trip-heading" data-testid="trip-form">
       <h2 id="trip-heading">{{ msg('show') }}</h2>
+      <p class="trip-lead" data-testid="product-lead">{{ msg('whyLead') }}</p>
 
       <p class="quick-label">{{ msg('quickLabel') }}</p>
       <div class="quick" role="group" [attr.aria-label]="msg('quickLabel')">

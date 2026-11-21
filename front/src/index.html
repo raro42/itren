@@ -2,18 +2,91 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>itren</title>
+  <title>itren · honest next Rodalies train while you wait</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#032047">
-  <meta name="description" content="itren: honest next Rodalies train while you wait. Private project by Ralf Roeber. Origen de los datos: Renfe Operadora.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="itren shows the next real Rodalies train while you wait: honest delay, wait or leave. Private project by Ralf Roeber. Data: Renfe Operadora (CC BY 4.0).">
+  <meta name="author" content="Ralf Roeber">
+  <link rel="canonical" href="https://itren.zeitfenster.de/">
+  <link rel="alternate" hreflang="en" href="https://itren.zeitfenster.de/">
+  <link rel="alternate" hreflang="es" href="https://itren.zeitfenster.de/">
+  <link rel="alternate" hreflang="ca" href="https://itren.zeitfenster.de/">
+  <link rel="alternate" hreflang="x-default" href="https://itren.zeitfenster.de/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="itren">
+  <meta property="og:title" content="itren · honest next Rodalies train">
+  <meta property="og:description" content="Next real train, honest delay, wait or leave. For the Rodalies platform when the board goes blank.">
+  <meta property="og:url" content="https://itren.zeitfenster.de/">
+  <meta property="og:image" content="https://itren.zeitfenster.de/apple-touch-icon.png">
+  <meta property="og:locale" content="en_GB">
+  <meta property="og:locale:alternate" content="es_ES">
+  <meta property="og:locale:alternate" content="ca_ES">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="itren · honest next Rodalies train">
+  <meta name="twitter:description" content="Next real train, honest delay, wait or leave. Private project by Ralf Roeber.">
+  <meta name="twitter:image" content="https://itren.zeitfenster.de/apple-touch-icon.png">
+
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <!-- Only preload the text face used on first paint; bold can wait. -->
   <link rel="preload" href="/fonts/OpenSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/fonts/OpenSans-Bold.woff2" as="font" type="font/woff2" crossorigin>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "itren",
+    "url": "https://itren.zeitfenster.de/",
+    "applicationCategory": "TravelApplication",
+    "operatingSystem": "Web",
+    "isAccessibleForFree": true,
+    "inLanguage": ["en", "es", "ca"],
+    "description": "Honest next Rodalies train while you wait: schedule, live delay when available, wait or leave.",
+    "author": {
+      "@type": "Person",
+      "name": "Ralf Roeber"
+    },
+    "creator": {
+      "@type": "Person",
+      "name": "Ralf Roeber"
+    },
+    "license": "https://github.com/raro42/yonose",
+    "image": "https://itren.zeitfenster.de/apple-touch-icon.png"
+  }
+  </script>
+  <style>
+    /* Tiny first-paint shell so agents/crawlers see real text before JS. */
+    #boot-shell{font-family:"Open Sans","Segoe UI",sans-serif;color:#032047;background:#f9f9f9;margin:0;padding:1rem;max-width:40rem}
+    #boot-shell .brand{margin:0;font-size:1.75rem;font-weight:700;color:#f1162f}
+    #boot-shell h1{margin:.35rem 0 1rem;font-size:1rem;font-weight:400;color:#808080}
+    #boot-shell p{line-height:1.45;color:#032047}
+    #boot-shell .muted{color:#808080;font-size:.9rem}
+  </style>
 </head>
 <body>
-  <app-root></app-root>
+  <app-root>
+    <div id="boot-shell" data-testid="boot-shell">
+      <p class="brand">itren</p>
+      <h1>Honest next train while you wait.</h1>
+      <p>
+        Board blank. App said on time. You waited anyway. itren is for that Rodalies platform moment:
+        next real train, honest delay, wait or leave.
+      </p>
+      <p>
+        Pick origin and destination, then show next trains. Catalan, Spanish, English. Free.
+        Private project by Ralf Roeber.
+      </p>
+      <p class="muted">Data origin: Renfe Operadora (CC BY 4.0). Open source on GitHub.</p>
+      <noscript>
+        <p role="alert">JavaScript is required to load live departures. The page shell above still describes the product.</p>
+      </noscript>
+    </div>
+  </app-root>
 </body>
 </html>

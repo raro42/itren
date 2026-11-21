@@ -40,6 +40,8 @@
   letter-spacing: -0.02em;
 }
 
+.trip-lead{margin:0;color:var(--color-text-muted);line-height:1.45;max-width:34rem}
+
 .quick-label {
   margin: 0;
   font-size: 0.75rem;

@@ -15,9 +15,13 @@ if (!fs.existsSync(indexPath)) {
 
 let html = fs.readFileSync(indexPath, 'utf8');
 let n = 0;
-html = html.replace(/<script(?![^>]*\bsrc\s*=)([^>]*)>([\s\S]*?)<\/script>/gi, (full, _attrs, code) => {
+html = html.replace(/<script(?![^>]*\bsrc\s*=)([^>]*)>([\s\S]*?)<\/script>/gi, (full, attrs, code) => {
   const body = code.trim();
   if (!body) return full;
+  // Keep JSON-LD inline for crawlers; do not turn it into an executable boot file.
+  if (/type\s*=\s*["']application\/ld\+json["']/i.test(attrs || '')) {
+    return full;
+  }
   n += 1;
   const name = `boot-${n}.js`;
   fs.writeFileSync(path.join(outDir, name), `${body}\n`);

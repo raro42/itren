@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, signal } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { environment } from '../environments/environment';
 import { LangService } from './lang.service';
@@ -36,14 +37,19 @@ export class AppComponent implements OnInit {
   constructor(
     private langSvc: LangService,
     private http: HttpClient,
+    private title: Title,
   ) {}
 
   ngOnInit(): void {
-    const visitor = getVisitorId();
-    this.http.post(`${environment.apiBase}/visit`, { visitor_id: visitor }).subscribe({
-      error: () => undefined,
+    this.syncDocumentTitle();
+    // Soft metrics after first paint so LCP is not blocked on /visit + /stats.
+    this.whenIdle(() => {
+      const visitor = getVisitorId();
+      this.http.post(`${environment.apiBase}/visit`, { visitor_id: visitor }).subscribe({
+        error: () => undefined,
+      });
+      this.refreshStats();
     });
-    this.refreshStats();
     try {
       const v = localStorage.getItem('itren.vote') as 'like' | 'dislike' | null;
       if (v === 'like' || v === 'dislike') this.myVote.set(v);
@@ -62,6 +68,7 @@ export class AppComponent implements OnInit {
 
   setLang(lang: Lang): void {
     this.langSvc.setLang(lang);
+    this.syncDocumentTitle();
   }
 
   vote(v: 'like' | 'dislike'): void {
@@ -110,10 +117,27 @@ export class AppComponent implements OnInit {
     }
   }
 
+  private syncDocumentTitle(): void {
+    this.title.setTitle(`${this.msg('brand')} · ${this.msg('tagline')}`);
+  }
+
   private refreshStats(): void {
     this.http.get<PublicStats>(`${environment.apiBase}/stats`).subscribe({
       next: (s) => this.stats.set(s),
       error: () => undefined,
     });
+  }
+
+  private whenIdle(fn: () => void): void {
+    const ric = (
+      window as Window & {
+        requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      }
+    ).requestIdleCallback;
+    if (typeof ric === 'function') {
+      ric(() => fn(), { timeout: 2500 });
+    } else {
+      window.setTimeout(fn, 400);
+    }
   }
 }
