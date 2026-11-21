@@ -30,7 +30,7 @@ Private project by Ralf Roeber (not a company product).
 | Footer | GitHub repo link + semver + short commit hash on every public page |
 | Answers | Real data (Renfe GTFS + GTFS-RT + alerts); AI to explain situation + related news |
 | Brand name | **itren** (UI, title, share text). GitHub repo may stay `raro42/yonose` until renamed. |
-| Deploy | Public site `yonose.zeitfenster.de` until DNS cutover (ops host is private; see local notes, not git). SSL/HAProxy: other bot |
+| Deploy | Public site `itren.zeitfenster.de` (alias `yonose.zeitfenster.de` for now). Ops host private; see local notes, not git. SSL/HAProxy: other bot |
 | Money | Free for now |
 | Stack rules | Slim POS habits: see `.cursor/rules/` (`agent-stack-pos-adapted`, `ui-human-agent-a11y`, `ui-contrast`) |
 | Front | Angular **22.3.0** exact pins (no `^`/`~`). See `front/package.json` |
