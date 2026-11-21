@@ -66,6 +66,15 @@ For yonose visual checks: a **separate** Chromium profile and debug port, docume
 ./agents/yonose-cursor-loop.sh status
 ```
 
+**Reboot-safe arm (this machine):** systemd user unit `itren-agent-loop.service`, gated by `~/.local/state/itren-agent/enabled`. Hypr login runs `ensure-loop.sh`.
+
+```bash
+touch ~/.local/state/itren-agent/enabled
+~/.local/state/itren-agent/ensure-loop.sh
+systemctl --user status itren-agent-loop.service
+# stop: rm ~/.local/state/itren-agent/enabled && systemctl --user stop itren-agent-loop.service
+```
+
 Queue: `agents/tasks/` - `FEAT` -> `WIP` -> `UNTESTED` -> `TESTING` -> `CLOSED`.
 Open issues on `raro42/itren` feed pickup (`agents/issue_checker.py`).
 
