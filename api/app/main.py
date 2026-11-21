@@ -122,6 +122,33 @@ def stations(q: str | None = Query(None), limit: int = Query(80, ge=1, le=300)) 
     }
 
 
+@app.get("/stations/near")
+@app.get("/api/stations/near")
+def stations_near(
+    lat: float = Query(..., ge=-90, le=90),
+    lon: float = Query(..., ge=-180, le=180),
+    limit: int = Query(5, ge=1, le=20),
+) -> dict[str, Any]:
+    try:
+        STORE.ensure_loaded()
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"GTFS unavailable: {e}") from e
+    nearest = STORE.nearest_stations(lat, lon, limit=limit)
+    return {
+        "stations": [
+            {
+                "id": s.id,
+                "name": s.name,
+                "lat": s.lat,
+                "lon": s.lon,
+                "distance_m": round(dist),
+            }
+            for s, dist in nearest
+        ],
+        "attribution": "Origen de los datos: Renfe Operadora (CC BY 4.0)",
+    }
+
+
 @app.get("/next")
 @app.get("/api/next")
 def next_trains(
@@ -181,6 +208,7 @@ def next_trains(
         )
 
     feed_ok = STORE.live_feed_ok()
+    feed_age = STORE.live_feed_age_seconds()
     if not deps:
         live_mode = "unknown"
     elif any_rt:
@@ -215,6 +243,7 @@ def next_trains(
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "live_mode": live_mode,
         "live_feed_ok": feed_ok,
+        "live_feed_age_seconds": feed_age,
         "alerts": alerts,
         "departures": board,
         "taxi": taxi,

@@ -12,6 +12,9 @@
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" data-testid="nav-home">
         {{ msg('navHome') }}
       </a>
+      <a routerLink="/faq" routerLinkActive="active" data-testid="nav-faq">
+        {{ msg('navFaq') }}
+      </a>
       <a routerLink="/feedback" routerLinkActive="active" data-testid="nav-feedback">
         {{ msg('navFeedbackShort') }}
       </a>
@@ -72,9 +75,23 @@
     </section>
 
     <nav class="footer-nav" aria-label="Footer">
+      @if (canInstall()) {
+        <button
+          type="button"
+          class="footer-item"
+          (click)="installApp()"
+          [attr.title]="msg('installHint')"
+          data-testid="footer-install"
+        >
+          {{ msg('installBtn') }}
+        </button>
+        <span class="dot" aria-hidden="true">·</span>
+      }
       <button type="button" class="footer-item" (click)="share()" data-testid="footer-share">
         {{ msg('shareShort') }}
       </button>
+      <span class="dot" aria-hidden="true">·</span>
+      <a routerLink="/faq" class="footer-item" data-testid="footer-faq">{{ msg('navFaq') }}</a>
       <span class="dot" aria-hidden="true">·</span>
       <a routerLink="/feedback" class="footer-item" data-testid="footer-feedback">{{ msg('navFeedbackShort') }}</a>
       <span class="dot" aria-hidden="true">·</span>
@@ -94,6 +111,7 @@
       <span class="meta">{{ version }} <span class="commit">{{ commitHash }}</span></span>
     </div>
     <p class="attr">{{ msg('attribution') }}</p>
-    <p class="attr data-coverage">{{ msg('dataCoverage') }}</p>
+    <p class="attr">{{ msg('dataCoverage') }}</p>
+    <p class="attr disclaimer" data-testid="disclaimer">{{ msg('disclaimer') }}</p>
   </footer>
 </div>

@@ -83,6 +83,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
         response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
         response.headers.setdefault("X-Frame-Options", "DENY")
-        response.headers.setdefault("Permissions-Policy", "geolocation=(), microphone=(), camera=()")
+        # geolocation=(self): optional “I’m here” origin pick. Mic/camera stay off.
+        response.headers.setdefault("Permissions-Policy", "geolocation=(self), microphone=(), camera=()")
         response.headers.setdefault("Cache-Control", "no-store")
         return response

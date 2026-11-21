@@ -5,7 +5,13 @@
       <p class="trip-lead" data-testid="product-lead">{{ msg('whyLead') }}</p>
 
       <p class="quick-label">{{ msg('quickLabel') }}</p>
-      <p class="data-coverage" data-testid="data-coverage">{{ msg('dataCoverage') }}</p>
+      <aside class="data-note" data-testid="data-coverage">
+        <p>{{ msg('attribution') }}</p>
+        <p>{{ msg('dataCoverage') }}</p>
+        <p>
+          <a routerLink="/faq" data-testid="data-faq-link">{{ msg('dataFaqLink') }}</a>
+        </p>
+      </aside>
       <div class="quick" role="group" [attr.aria-label]="msg('quickLabel')">
         <button
           type="button"
@@ -68,6 +74,23 @@
         </div>
         @if (fromId()) {
           <p class="picked" data-testid="from-picked">{{ stationName(fromId()) }}</p>
+        }
+        @if (canGeo) {
+          <div class="here-row">
+            <button
+              type="button"
+              class="ghost here-btn"
+              (click)="useHere()"
+              [disabled]="hereBusy()"
+              [attr.title]="msg('hereHint')"
+              data-testid="here-btn"
+            >
+              {{ hereBusy() ? msg('hereBusy') : msg('hereBtn') }}
+            </button>
+            @if (hereStatus()) {
+              <p class="here-status" role="status" data-testid="here-status">{{ hereStatus() }}</p>
+            }
+          </div>
         }
       </label>
 
@@ -163,13 +186,18 @@
           data-testid="live-banner"
           role="status"
         >
-          {{ msg(liveBannerKey()) }}
+          {{ liveBannerText() }}
         </p>
 
         <p class="tap-hint">{{ msg('tapHint') }}</p>
 
         @if (!res.departures.length) {
-          <p>{{ msg('empty') }}</p>
+          <div class="empty-block" data-testid="empty-board">
+            <p>{{ msg('empty') }}</p>
+            <p>
+              <a routerLink="/faq" data-testid="empty-faq-link">{{ msg('emptyFaq') }}</a>
+            </p>
+          </div>
         } @else {
           <ol class="deps">
             @for (d of res.departures; track d.trip_id + d.scheduled) {
@@ -207,7 +235,10 @@
         }
 
         <p class="attr">{{ res.attribution || msg('attribution') }}</p>
-        <p class="attr data-coverage">{{ msg('dataCoverage') }}</p>
+        <p class="attr">{{ msg('dataCoverage') }}</p>
+        <p class="attr">
+          <a routerLink="/faq">{{ msg('dataFaqLink') }}</a>
+        </p>
       </section>
     } @else {
       <section class="why why-panel" aria-labelledby="why-heading">
@@ -290,7 +321,6 @@
       <p class="leave-flag">{{ msg('detailCancelled') }}</p>
     }
     <p class="meta">{{ msg('detailSource', { source: sourceLabel(d) }) }}</p>
-    <p class="meta">{{ msg('detailTrip') }}: <code>{{ d.trip_id }}</code></p>
     @if (d.suggest_leave) {
       <p class="leave-flag">{{ msg('leave') }}</p>
     }

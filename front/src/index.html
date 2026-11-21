@@ -10,6 +10,11 @@
   <meta name="robots" content="index, follow">
   <meta name="description" content="itren shows the next real Rodalies train while you wait: honest delay, wait or leave. Private project by Ralf Roeber. Data: Renfe Operadora (CC BY 4.0).">
   <meta name="author" content="Ralf Roeber">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="itren">
+  <link rel="manifest" href="/manifest.webmanifest">
   <link rel="canonical" href="https://itren.zeitfenster.de/">
   <link rel="alternate" hreflang="en" href="https://itren.zeitfenster.de/">
   <link rel="alternate" hreflang="es" href="https://itren.zeitfenster.de/">
@@ -21,19 +26,24 @@
   <meta property="og:title" content="itren · honest next Rodalies train">
   <meta property="og:description" content="Next real train, honest delay, wait or leave. For the Rodalies platform when the board goes blank.">
   <meta property="og:url" content="https://itren.zeitfenster.de/">
-  <meta property="og:image" content="https://itren.zeitfenster.de/apple-touch-icon.png">
+  <meta property="og:image" content="https://itren.zeitfenster.de/og-itren.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="itren">
   <meta property="og:locale" content="en_GB">
   <meta property="og:locale:alternate" content="es_ES">
   <meta property="og:locale:alternate" content="ca_ES">
 
-  <meta name="twitter:card" content="summary">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="itren · honest next Rodalies train">
   <meta name="twitter:description" content="Next real train, honest delay, wait or leave. Private project by Ralf Roeber.">
-  <meta name="twitter:image" content="https://itren.zeitfenster.de/apple-touch-icon.png">
+  <meta name="twitter:image" content="https://itren.zeitfenster.de/og-itren.png">
 
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="icon" href="favicon.ico" sizes="any">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <!-- New filenames (itren.*) bust the old yonose “y” favicon / share cache. -->
+  <link rel="icon" href="/itren.svg" type="image/svg+xml">
+  <link rel="icon" href="/itren.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/itren-180.png">
   <!-- Only preload the text face used on first paint; bold can wait. -->
   <link rel="preload" href="/fonts/OpenSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
 
@@ -57,7 +67,7 @@
       "name": "Ralf Roeber"
     },
     "license": "https://github.com/raro42/itren",
-    "image": "https://itren.zeitfenster.de/apple-touch-icon.png"
+    "image": "https://itren.zeitfenster.de/og-itren.png"
   }
   </script>
   <style>
@@ -82,7 +92,7 @@
         Pick origin and destination, then show next trains. Catalan, Spanish, English. Free.
         Private project by Ralf Roeber.
       </p>
-      <p class="muted">Data origin: Renfe Operadora (CC BY 4.0). Open source on GitHub.</p>
+      <p class="muted">Data: Renfe Operadora (CC BY 4.0), full Cercanías / Rodalies GTFS. Direct trains only. FAQ on the site. Open source on GitHub.</p>
       <noscript>
         <p role="alert">JavaScript is required to load live departures. The page shell above still describes the product.</p>
       </noscript>

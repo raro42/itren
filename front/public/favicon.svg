@@ -1,12 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="itren">
   <rect width="32" height="32" rx="6" fill="#032047"/>
-  <text
-    x="16"
-    y="23.5"
-    text-anchor="middle"
-    font-family="DejaVu Sans, Liberation Sans, Arial, sans-serif"
-    font-weight="700"
-    font-size="22"
-    fill="#f1162f"
-  >i</text>
+  <!-- Geometric i: stays sharp at favicon sizes (no font raster blur). -->
+  <circle cx="16" cy="8.2" r="2.6" fill="#f1162f"/>
+  <rect x="13.4" y="12.2" width="5.2" height="13.2" rx="1.6" fill="#f1162f"/>
 </svg>

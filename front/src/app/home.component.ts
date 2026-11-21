@@ -34,8 +34,10 @@ type NextResponse = {
   empty_reason: string | null;
   live_mode?: 'live' | 'timetable' | 'timetable_only' | 'unknown';
   live_feed_ok?: boolean;
+  live_feed_age_seconds?: number | null;
   alerts?: AlertItem[];
 };
+type NearStation = Station & { distance_m: number };
 type Favorite = { fromId: string; toId: string; fromName: string; toName: string };
 type ReportKind = 'on_time' | 'late' | 'no_show' | 'board_wrong';
 
@@ -121,9 +123,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   selected = signal<Departure | null>(null);
   reportStatus = signal<string | null>(null);
   reportAgg = signal<Record<string, number> | null>(null);
+  hereStatus = signal<string | null>(null);
+  hereBusy = signal(false);
   knownNames = new Map<string, string>();
   readonly githubStarUrl = environment.githubUrl;
   readonly authorUrl = environment.authorUrl;
+  readonly canGeo = typeof navigator !== 'undefined' && !!navigator.geolocation;
 
   private fromTimer: ReturnType<typeof setTimeout> | null = null;
   private toTimer: ReturnType<typeof setTimeout> | null = null;
@@ -332,11 +337,69 @@ export class HomeComponent implements OnInit, OnDestroy {
     return this.msg('detailSourceUnknown');
   }
 
-  liveBannerKey(): MsgKey {
-    const mode = this.result()?.live_mode;
-    if (mode === 'live') return 'liveBannerLive';
-    if (mode === 'timetable' || mode === 'timetable_only') return 'liveBannerTimetable';
-    return 'liveBannerUnknown';
+  liveBannerText(): string {
+    const res = this.result();
+    if (!res) return '';
+    const age = this.formatFeedAge(res.live_feed_age_seconds);
+    const mode = res.live_mode;
+    if (mode === 'live') {
+      return age ? this.msg('liveBannerLiveAge', { age }) : this.msg('liveBannerLive');
+    }
+    if (mode === 'timetable' || mode === 'timetable_only') {
+      return age
+        ? this.msg('liveBannerTimetableAge', { age })
+        : this.msg('liveBannerTimetable');
+    }
+    return this.msg('liveBannerUnknown');
+  }
+
+  formatFeedAge(seconds: number | null | undefined): string {
+    if (seconds == null || !Number.isFinite(seconds)) return '';
+    const s = Math.max(0, Math.round(seconds));
+    if (s < 60) return `${s}s`;
+    const m = Math.round(s / 60);
+    if (m < 60) return `${m} min`;
+    const h = Math.floor(m / 60);
+    const rem = m % 60;
+    return rem ? `${h}h ${rem}m` : `${h}h`;
+  }
+
+  useHere(): void {
+    if (!this.canGeo || this.hereBusy()) return;
+    this.hereBusy.set(true);
+    this.hereStatus.set(this.msg('hereBusy'));
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        void this.resolveNear(pos.coords.latitude, pos.coords.longitude);
+      },
+      (err) => {
+        this.hereBusy.set(false);
+        this.hereStatus.set(err.code === 1 ? this.msg('hereDenied') : this.msg('hereFail'));
+      },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 60_000 },
+    );
+  }
+
+  private async resolveNear(lat: number, lon: number): Promise<void> {
+    try {
+      const res = await firstValueFrom(
+        this.http.get<{ stations: NearStation[] }>(`${environment.apiBase}/stations/near`, {
+          params: { lat: String(lat), lon: String(lon), limit: 3 },
+        }),
+      );
+      const hit = (res.stations || []).find((s) => s.distance_m <= 4000);
+      if (!hit) {
+        this.hereStatus.set(this.msg('hereFail'));
+        return;
+      }
+      this.selectFrom(hit);
+      this.hereStatus.set(`${hit.name} (~${Math.round(hit.distance_m)} m)`);
+      if (this.toId()) void this.loadNext();
+    } catch {
+      this.hereStatus.set(this.msg('hereFail'));
+    } finally {
+      this.hereBusy.set(false);
+    }
   }
 
   /** Short OD-relevant alerts for the detail sheet only (never the board). */

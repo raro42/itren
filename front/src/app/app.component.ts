@@ -18,6 +18,11 @@ type PublicStats = {
   dislikes: number;
 };
 
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+};
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -33,6 +38,8 @@ export class AppComponent implements OnInit {
   stats = signal<PublicStats | null>(null);
   myVote = signal<'like' | 'dislike' | null>(null);
   voteThanks = signal(false);
+  canInstall = signal(false);
+  private deferredInstall: BeforeInstallPromptEvent | null = null;
 
   constructor(
     private langSvc: LangService,
@@ -42,6 +49,15 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.syncDocumentTitle();
+    window.addEventListener('beforeinstallprompt', (ev) => {
+      ev.preventDefault();
+      this.deferredInstall = ev as BeforeInstallPromptEvent;
+      this.canInstall.set(true);
+    });
+    window.addEventListener('appinstalled', () => {
+      this.deferredInstall = null;
+      this.canInstall.set(false);
+    });
     // Soft metrics after first paint so LCP is not blocked on /visit + /stats.
     this.whenIdle(() => {
       const visitor = getVisitorId();
@@ -55,6 +71,19 @@ export class AppComponent implements OnInit {
       if (v === 'like' || v === 'dislike') this.myVote.set(v);
     } catch {
       /* ignore */
+    }
+  }
+
+  async installApp(): Promise<void> {
+    const ev = this.deferredInstall;
+    if (!ev) return;
+    this.deferredInstall = null;
+    this.canInstall.set(false);
+    await ev.prompt();
+    try {
+      await ev.userChoice;
+    } catch {
+      /* user dismissed or browser quirk */
     }
   }
 

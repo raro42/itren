@@ -13,7 +13,7 @@ Station boards that go blank or lie (Rodalies / Maresme stories) are the failure
 Private project by Ralf Roeber (not a company product).
 
 **Not** another Spain-wide train map (valfiguer / movilidad-bcn already exist).
-**Not** an App Store app. Web only (Angular), PWA later if needed.
+**Not** an App Store app. Web + installable PWA (manifest + shell service worker).
 **Not** monetized for now.
 
 ## Product (locked)

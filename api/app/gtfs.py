@@ -4,6 +4,7 @@ import csv
 import io
 import json
 import logging
+import math
 import threading
 import time
 import zipfile
@@ -202,15 +203,7 @@ class GtfsStore:
 
     def list_stations(self, q: str | None = None, limit: int = 80) -> list[Station]:
         self.ensure_loaded()
-        items = list(self.stations.values())
-        # Prefer unique names (collapse platforms by name)
-        by_name: dict[str, Station] = {}
-        for s in items:
-            key = s.name.casefold()
-            prev = by_name.get(key)
-            if prev is None or (s.lat is not None and prev.lat is None):
-                by_name[key] = s
-        items = sorted(by_name.values(), key=lambda s: s.name.casefold())
+        items = sorted(self._unique_named_stations(), key=lambda s: s.name.casefold())
         if q:
             # Token match so "Terrassa Nord" hits "Terrassa Estació del Nord"
             # (substring "terrassa nord" is not contiguous in the official name).
@@ -290,6 +283,31 @@ class GtfsStore:
 
     def live_feed_ok(self) -> bool:
         return bool(self._rt_ok_at) and (time.time() - self._rt_ok_at) < 300
+
+    def live_feed_age_seconds(self) -> int | None:
+        if not self._rt_ok_at:
+            return None
+        return max(0, int(time.time() - self._rt_ok_at))
+
+    def _unique_named_stations(self) -> list[Station]:
+        by_name: dict[str, Station] = {}
+        for s in self.stations.values():
+            key = s.name.casefold()
+            prev = by_name.get(key)
+            if prev is None or (s.lat is not None and prev.lat is None):
+                by_name[key] = s
+        return list(by_name.values())
+
+    def nearest_stations(self, lat: float, lon: float, limit: int = 5) -> list[tuple[Station, float]]:
+        """Return closest stations with coordinates, as (station, metres)."""
+        self.ensure_loaded()
+        scored: list[tuple[float, Station]] = []
+        for s in self._unique_named_stations():
+            if s.lat is None or s.lon is None:
+                continue
+            scored.append((_haversine_m(lat, lon, s.lat, s.lon), s))
+        scored.sort(key=lambda x: x[0])
+        return [(s, dist) for dist, s in scored[: max(1, limit)]]
 
     def active_alerts(
         self,
@@ -436,6 +454,15 @@ class GtfsStore:
                     delay = int(stu["arrival"]["delay"])
             if delay is not None:
                 d.delay_seconds = delay
+
+
+def _haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    r = 6371000.0
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dphi = math.radians(lat2 - lat1)
+    dlmb = math.radians(lon2 - lon1)
+    a = math.sin(dphi / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dlmb / 2) ** 2
+    return 2 * r * math.asin(min(1.0, math.sqrt(a)))
 
 
 def _alert_text(block: Any) -> str:

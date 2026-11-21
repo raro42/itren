@@ -1,0 +1,41 @@
+.faq {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 36rem;
+}
+
+.faq h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 4vw, 1.75rem);
+  color: var(--color-text);
+}
+
+.faq .lead,
+.faq p {
+  margin: 0;
+  line-height: 1.55;
+  color: var(--color-text);
+}
+
+.faq .lead {
+  color: var(--color-text-muted);
+}
+
+.faq section {
+  display: grid;
+  gap: 0.35rem;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+}
+
+.faq h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.35;
+  color: var(--color-text);
+}
+
+.faq a[routerLink] {
+  color: var(--color-secondary);
+  font-weight: 600;
+}
