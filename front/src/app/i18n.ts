@@ -133,10 +133,10 @@ const dict = {
     feedbackLead:
       'itren es para la espera en el andén: próximo tren, retraso honesto, cuándo irse. Cuéntanos qué falla o qué necesitas.',
     feedbackHow:
-      'Los bugs van a issues públicas de GitHub. No hay cuenta en este sitio. Usa GitHub para abrir o seguir una issue.',
-    feedbackNewIssue: 'Abrir una issue nueva',
-    feedbackBrowseIssues: 'Ver todas las issues',
-    feedbackNote: 'No pegues contraseñas, IPs privadas ni datos personales en las issues.',
+      'Los bugs van a preguntas públicas en GitHub. No hay cuenta en este sitio. Usa GitHub para abrir o seguir una pregunta.',
+    feedbackNewIssue: 'Abrir una nueva pregunta',
+    feedbackBrowseIssues: 'Ver todas las preguntas',
+    feedbackNote: 'No pegues contraseñas, IPs privadas ni datos personales en las preguntas.',
     feedbackBack: 'Volver al panel',
     aboutTitle: 'Quién lo ofrece',
     aboutLead:
@@ -220,10 +220,10 @@ const dict = {
     feedbackLead:
       'itren és per l’espera a l’andana: proper tren, retard honest, quan marxar. Digues-nos què falla o què et cal.',
     feedbackHow:
-      'Els bugs van a issues públiques de GitHub. No hi ha compte en aquest lloc. Usa GitHub per obrir o seguir una issue.',
-    feedbackNewIssue: 'Obrir una issue nova',
-    feedbackBrowseIssues: 'Veure totes les issues',
-    feedbackNote: 'No enganxis contrasenyes, IPs privades ni dades personals a les issues.',
+      'Els bugs van a preguntes públiques a GitHub. No hi ha compte en aquest lloc. Usa GitHub per obrir o seguir una pregunta.',
+    feedbackNewIssue: 'Obrir una pregunta nova',
+    feedbackBrowseIssues: 'Veure totes les preguntes',
+    feedbackNote: 'No enganxis contrasenyes, IPs privades ni dades personals a les preguntes.',
     feedbackBack: 'Tornar al panell',
     aboutTitle: 'Qui ho ofereix',
     aboutLead:
