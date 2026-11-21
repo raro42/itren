@@ -369,8 +369,20 @@
 
 .about {
   margin-top: var(--space-6);
-  padding: var(--space-5);
+  padding-top: var(--space-5);
   border-top: 1px solid var(--color-deco-line);
+}
+
+.about a.author-link {
+  color: var(--color-secondary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.about a.feedback-link {
+  color: var(--color-secondary);
+  font-weight: 600;
 }
 
 .about h2 {

@@ -7,4 +7,5 @@ export const environment = {
   githubUrl: 'https://github.com/raro42/itren',
   githubIssuesUrl: 'https://github.com/raro42/itren/issues',
   githubNewIssueUrl: 'https://github.com/raro42/itren/issues/new',
+  authorUrl: 'https://zeitfenster.de/',
 };

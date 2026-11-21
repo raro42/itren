@@ -52,8 +52,12 @@ const dict = {
     feedbackNote: 'Please do not paste passwords, private IPs, or personal data into issues.',
     feedbackBack: 'Back to the board',
     aboutTitle: 'Who runs this',
-    aboutLead:
-      'Private project by Ralf Roeber. Born from real Rodalies waits (blank boards, green maps that lie). Hosted for our own needs. Free. Not a company product.',
+    aboutLeadBefore: 'Private project by ',
+    aboutLeadAfter:
+      '. Born from real Rodalies waits (blank boards, green maps that lie). Hosted for our own needs. Free. Not a company product.',
+    aboutBest:
+      'I do my best to keep this useful for people waiting on the platform. If something breaks or is missing, ',
+    aboutFeedbackCta: 'leave a question',
     aboutStar: 'If it helps you, star the repo on GitHub.',
     aboutShare: 'Share it with someone who waits on the same platforms.',
     starGithub: 'Star on GitHub',
@@ -139,8 +143,12 @@ const dict = {
     feedbackNote: 'No pegues contraseñas, IPs privadas ni datos personales en las preguntas.',
     feedbackBack: 'Volver al panel',
     aboutTitle: 'Quién lo ofrece',
-    aboutLead:
-      'Proyecto privado de Ralf Roeber. Nació de esperas reales en Rodalies (paneles en blanco, mapas verdes que mienten). Lo hospedo para nuestras necesidades. Gratis. No es un producto de empresa.',
+    aboutLeadBefore: 'Proyecto privado de ',
+    aboutLeadAfter:
+      '. Nació de esperas reales en Rodalies (paneles en blanco, mapas verdes que mienten). Lo hospedo para nuestras necesidades. Gratis. No es un producto de empresa.',
+    aboutBest:
+      'Hago lo posible para que esto sirva de verdad a quien espera en el andén. Si algo falla o falta, ',
+    aboutFeedbackCta: 'deja una pregunta',
     aboutStar: 'Si te sirve, deja una estrella en GitHub.',
     aboutShare: 'Compártelo con alguien que espera en los mismos andenes.',
     starGithub: 'Estrella en GitHub',
@@ -226,8 +234,12 @@ const dict = {
     feedbackNote: 'No enganxis contrasenyes, IPs privades ni dades personals a les preguntes.',
     feedbackBack: 'Tornar al panell',
     aboutTitle: 'Qui ho ofereix',
-    aboutLead:
-      'Projecte privat de Ralf Roeber. Va néixer d’esperes reals a Rodalies (panells en blanc, mapes verds que menteixen). L’allotjo per a les nostres necessitats. Gratis. No és un producte d’empresa.',
+    aboutLeadBefore: 'Projecte privat de ',
+    aboutLeadAfter:
+      '. Va néixer d’esperes reals a Rodalies (panells en blanc, mapes verds que menteixen). L’allotjo per a les nostres necessitats. Gratis. No és un producte d’empresa.',
+    aboutBest:
+      'Faig el possible perquè això serveixi de veritat a qui espera a l’andana. Si alguna cosa falla o falta, ',
+    aboutFeedbackCta: 'deixa una pregunta',
     aboutStar: 'Si et serveix, deixa una estrella a GitHub.',
     aboutShare: 'Comparteix-ho amb algú que espera a les mateixes andanes.',
     starGithub: 'Estrella a GitHub',

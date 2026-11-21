@@ -232,7 +232,22 @@
 
     <section class="about" aria-labelledby="about-heading" data-testid="about">
       <h2 id="about-heading">{{ msg('aboutTitle') }}</h2>
-      <p>{{ msg('aboutLead') }}</p>
+      <p>
+        {{ msg('aboutLeadBefore') }}<a
+          class="author-link"
+          [href]="authorUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-testid="author-link"
+        >Ralf Roeber</a>{{ msg('aboutLeadAfter') }}
+      </p>
+      <p>
+        {{ msg('aboutBest') }}<a
+          class="feedback-link"
+          routerLink="/feedback"
+          data-testid="about-feedback"
+        >{{ msg('aboutFeedbackCta') }}</a>.
+      </p>
       <p>{{ msg('aboutStar') }}</p>
       <p>{{ msg('aboutShare') }}</p>
       <div class="about-actions">

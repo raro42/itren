@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, HostListener, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../environments/environment';
 import { LangService } from './lang.service';
@@ -87,7 +88,7 @@ function migrateLs(): void {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
@@ -110,6 +111,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   reportAgg = signal<Record<string, number> | null>(null);
   knownNames = new Map<string, string>();
   readonly githubStarUrl = environment.githubUrl;
+  readonly authorUrl = environment.authorUrl;
 
   private fromTimer: ReturnType<typeof setTimeout> | null = null;
   private toTimer: ReturnType<typeof setTimeout> | null = null;
