@@ -345,15 +345,13 @@
   border-left-color: var(--color-accent);
 }
 
-.alerts {
-  margin: 0 0 var(--space-3);
-  padding: 0.65rem 0.85rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-elevated);
+.detail-alerts {
+  margin: var(--space-3) 0 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
 }
 
-.alerts h3 {
+.detail-alerts h3 {
   margin: 0 0 0.35rem;
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -361,12 +359,14 @@
   color: var(--color-text-muted);
 }
 
-.alerts ul {
+.detail-alerts ul {
   margin: 0;
   padding-left: 1.1rem;
   display: grid;
   gap: 0.35rem;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  line-height: 1.35;
 }
 
 .tap-hint {

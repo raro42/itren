@@ -166,22 +166,6 @@
           {{ msg(liveBannerKey()) }}
         </p>
 
-        @if (res.alerts?.length) {
-          <div class="alerts" data-testid="alerts">
-            <h3>{{ msg('alertsTitle') }}</h3>
-            <ul>
-              @for (a of res.alerts; track a.header) {
-                <li>
-                  <strong>{{ a.header }}</strong>
-                  @if (a.description && a.description !== a.header) {
-                    <span>{{ a.description }}</span>
-                  }
-                </li>
-              }
-            </ul>
-          </div>
-        }
-
         <p class="tap-hint">{{ msg('tapHint') }}</p>
 
         @if (!res.departures.length) {
@@ -309,6 +293,19 @@
     <p class="meta">{{ msg('detailTrip') }}: <code>{{ d.trip_id }}</code></p>
     @if (d.suggest_leave) {
       <p class="leave-flag">{{ msg('leave') }}</p>
+    }
+
+    @if (detailAlerts(d); as alerts) {
+      @if (alerts.length) {
+        <div class="detail-alerts" data-testid="detail-alerts">
+          <h3>{{ msg('alertsTitle') }}</h3>
+          <ul>
+            @for (a of alerts; track a.header) {
+              <li>{{ a.header }}</li>
+            }
+          </ul>
+        </div>
+      }
     }
 
     <div class="report" data-testid="trip-report">

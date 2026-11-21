@@ -75,7 +75,7 @@ const dict = {
     liveBannerTimetable:
       'Timetable only right now. Live delay not confirmed for these trains. Empty truth beats a pretty lie.',
     liveBannerUnknown: 'Live feed status unclear. Treat times as schedule.',
-    alertsTitle: 'Alerts',
+    alertsTitle: 'Related alerts',
     tapHint: 'Tap a train for details',
     detailTitle: 'Train details',
     detailClose: 'Close',
@@ -168,7 +168,7 @@ const dict = {
     liveBannerTimetable:
       'Solo horario ahora. Retraso en vivo no confirmado para estos trenes. La verdad vacía gana a una mentira bonita.',
     liveBannerUnknown: 'Estado del feed en vivo poco claro. Trata los tiempos como horario.',
-    alertsTitle: 'Avisos',
+    alertsTitle: 'Avisos relacionados',
     tapHint: 'Toca un tren para detalles',
     detailTitle: 'Detalle del tren',
     detailClose: 'Cerrar',
@@ -261,7 +261,7 @@ const dict = {
     liveBannerTimetable:
       'Només horari ara. Retard en viu no confirmat per aquests trens. La veritat buida guanya a una mentida maca.',
     liveBannerUnknown: 'Estat del feed en viu poc clar. Tracta els temps com a horari.',
-    alertsTitle: 'Avisos',
+    alertsTitle: 'Avisos relacionats',
     tapHint: 'Toca un tren per detalls',
     detailTitle: 'Detall del tren',
     detailClose: 'Tanca',

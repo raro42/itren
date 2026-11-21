@@ -291,9 +291,42 @@ class GtfsStore:
     def live_feed_ok(self) -> bool:
         return bool(self._rt_ok_at) and (time.time() - self._rt_ok_at) < 300
 
-    def active_alerts(self, limit: int = 5) -> list[dict[str, str]]:
+    def active_alerts(
+        self,
+        *,
+        from_name: str | None = None,
+        to_name: str | None = None,
+        lines: set[str] | None = None,
+        limit: int = 5,
+    ) -> list[dict[str, str]]:
+        """Return short service alerts relevant to this OD (skip elevator noise)."""
         self._refresh_alerts()
-        return list(self._alerts_cache[:limit])
+        lines = {x.casefold() for x in (lines or set()) if x}
+        needles = [n.casefold() for n in (from_name, to_name) if n]
+        # Significant place tokens from station names (skip tiny words)
+        for n in list(needles):
+            needles.extend(t for t in n.replace("-", " ").split() if len(t) >= 4)
+
+        scored: list[tuple[int, dict[str, str]]] = []
+        for a in self._alerts_cache:
+            blob = f"{a.get('header', '')} {a.get('description', '')}".casefold()
+            if _alert_is_noise(blob):
+                continue
+            score = 0
+            for line in lines:
+                if line and line in blob:
+                    score += 3
+            for needle in needles:
+                if needle and needle in blob:
+                    score += 2
+            # Keep mild nationwide disruption wording only if it mentions cercanías/rodalies
+            if score == 0 and any(k in blob for k in ("rodalies", "cercanías", "cercanias")):
+                score = 1
+            if score <= 0:
+                continue
+            scored.append((score, a))
+        scored.sort(key=lambda x: -x[0])
+        return [a for _, a in scored[:limit]]
 
     def _refresh_alerts(self) -> None:
         if self._alerts_fetched_at and (time.time() - self._alerts_fetched_at) < 120:
@@ -323,8 +356,15 @@ class GtfsStore:
             text = header or desc
             if not text:
                 continue
-            out.append({"header": header or text[:120], "description": desc})
-            if len(out) >= 8:
+            # Prefer short header for UI; keep description only if it adds something
+            item = {
+                "header": (header or text)[:160],
+                "description": desc if desc and desc != header else "",
+            }
+            if _alert_is_noise(f"{item['header']} {item['description']}"):
+                continue
+            out.append(item)
+            if len(out) >= 24:
                 break
         self._alerts_cache = out
         self._alerts_fetched_at = time.time()
@@ -409,6 +449,27 @@ def _alert_text(block: Any) -> str:
         if text:
             return text
     return ""
+
+
+def _alert_is_noise(blob: str) -> bool:
+    """Drop facility spam that does not help a waiting boarding decision."""
+    b = (blob or "").casefold()
+    noise_bits = (
+        "ascensor",
+        "elevator",
+        "escalera mecánica",
+        "escalera mecanica",
+        "aparcamiento",
+        "parking",
+        "aseo",
+        "baño",
+        "bano",
+        "máquina de venta",
+        "maquina de venta",
+        "punto de información",
+        "punto de informacion",
+    )
+    return any(n in b for n in noise_bits)
 
 
 def _f(v: str | None) -> float | None:

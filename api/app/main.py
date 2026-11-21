@@ -200,7 +200,14 @@ def next_trains(
             "label": from_st.name,
         }
 
-    alerts = STORE.active_alerts(limit=4)
+    # Relevant alerts only (no elevator spam). Front shows them in train details, not on the board.
+    lines = {str(row.get("line") or "") for row in board}
+    alerts = STORE.active_alerts(
+        from_name=from_st.name,
+        to_name=to_st.name,
+        lines=lines,
+        limit=4,
+    )
 
     return {
         "from": {"id": from_st.id, "name": from_st.name, "lat": from_st.lat, "lon": from_st.lon},

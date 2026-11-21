@@ -327,6 +327,26 @@ export class HomeComponent implements OnInit, OnDestroy {
     return 'liveBannerUnknown';
   }
 
+  /** Short OD-relevant alerts for the detail sheet only (never the board). */
+  detailAlerts(d: Departure): AlertItem[] {
+    const all = this.result()?.alerts || [];
+    if (!all.length) return [];
+    const line = fold(d.line || '');
+    const head = fold(d.headsign || '');
+    const scored = all
+      .map((a) => {
+        const blob = fold(`${a.header} ${a.description || ''}`);
+        let score = 0;
+        if (line && blob.includes(line)) score += 3;
+        if (head && head.split(/\s+/).some((t) => t.length >= 4 && blob.includes(t))) score += 1;
+        return { a, score };
+      })
+      .filter((x) => x.score > 0)
+      .sort((x, y) => y.score - x.score);
+    // No line/headsign match → stay quiet (better than elevator / other-city noise)
+    return scored.slice(0, 2).map((x) => x.a);
+  }
+
   sendReport(kind: ReportKind): void {
     const d = this.selected();
     const res = this.result();
