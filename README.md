@@ -12,6 +12,18 @@ ca / es / en · open source · Renfe data (CC BY 4.0)
 
 Repo: [github.com/raro42/itren](https://github.com/raro42/itren)
 
+<p align="center">
+  <a href="https://itren.zeitfenster.de/">
+    <img
+      src="docs/itren-home.png"
+      alt="itren desktop: Terrassa to Barcelona with live delay banner, Renfe alerts, and next R4 trains"
+      width="920"
+    />
+  </a>
+</p>
+
+<p align="center"><em>Terrassa → Barcelona on a real board. Live when Renfe says so. Honest when it does not.</em></p>
+
 ---
 
 ## The pain
