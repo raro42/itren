@@ -4,7 +4,7 @@ The loop runs `python3 agents/issue_checker.py` every cycle.
 
 ## Do
 
-- Turn **open** GitHub issues on `raro42/yonose` into `agents/tasks/FEAT-<number>-*.md`.
+- Turn **open** GitHub issues on `raro42/itren` into `agents/tasks/FEAT-<number>-*.md`.
 - Store a **short redacted summary** only. Never dump the raw issue body into git.
 - Comment with `./scripts/gh-safe.sh` and add `agent:planned`.
 - Skip numbers in `YONOSE_SKIP_ISSUES` (comma-separated).

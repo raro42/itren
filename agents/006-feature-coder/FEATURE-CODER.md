@@ -1,6 +1,6 @@
 # 006 — Feature coder
 
-Implement the lowest-numbered GitHub task under `agents/tasks/` (`FEAT-N` or `WIP-N` linking `raro42/yonose`).
+Implement the lowest-numbered GitHub task under `agents/tasks/` (`FEAT-N` or `WIP-N` linking `raro42/itren`).
 
 ## Rules
 

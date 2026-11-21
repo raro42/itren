@@ -1,4 +1,4 @@
-# AGENTS - itren (repo: yonose)
+# AGENTS - itren
 
 Thin agent loop. Shell orchestrator + markdown roles. Cursor is a worker.
 
@@ -6,7 +6,7 @@ See [agents-explained](https://github.com/raro42/agents-explained) and `agents/R
 
 ## Mission
 
-Public product name: **itren**. Repo and current public DNS may still say yonose until renamed.
+Public product name: **itren**. GitHub: `raro42/itren`.
 
 Public train transport truth for waiting humans: next real arrival, honest delay, situation in plain language, and when to stop waiting (e.g. taxi).
 Station boards that go blank or lie (Rodalies / Maresme stories) are the failure mode we fix.
@@ -29,7 +29,7 @@ Private project by Ralf Roeber (not a company product).
 | Habit | Browser `localStorage` for last trip, favorites, language |
 | Footer | GitHub repo link + semver + short commit hash on every public page |
 | Answers | Real data (Renfe GTFS + GTFS-RT + alerts); AI to explain situation + related news |
-| Brand name | **itren** (UI, title, share text). GitHub repo may stay `raro42/yonose` until renamed. |
+| Brand name | **itren** (UI, title, share text). GitHub: `raro42/itren`. |
 | Deploy | Public site `itren.zeitfenster.de` (alias `yonose.zeitfenster.de` for now). Ops host private; see local notes, not git. SSL/HAProxy: other bot |
 | Money | Free for now |
 | Stack rules | Slim POS habits: see `.cursor/rules/` (`agent-stack-pos-adapted`, `ui-human-agent-a11y`, `ui-contrast`) |
@@ -44,7 +44,7 @@ Ralf runs this **unattended**. Do **not** block on chat questions.
 
 When you need a human decision or are stuck:
 
-1. **Preferred:** open a GitHub **Issue** on `raro42/yonose` (label clearly, e.g. `needs-human`).
+1. **Preferred:** open a GitHub **Issue** on `raro42/itren` (label clearly, e.g. `needs-human`).
 2. **Or:** GitHub **Discussion** on the same repo.
 3. **Email:** contact the maintainer only via the address already used for this project (do not invent new channels). Only send if a working mail path exists.
 
@@ -67,7 +67,7 @@ For yonose visual checks: a **separate** Chromium profile and debug port, docume
 ```
 
 Queue: `agents/tasks/` - `FEAT` -> `WIP` -> `UNTESTED` -> `TESTING` -> `CLOSED`.
-Open issues on `raro42/yonose` feed pickup (`agents/issue_checker.py`).
+Open issues on `raro42/itren` feed pickup (`agents/issue_checker.py`).
 
 Server-side `cursor-agent` may exist on the deploy host; prefer it for ops jobs, not every page view. Details stay out of this file.
 

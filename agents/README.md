@@ -16,7 +16,7 @@ Shell orchestrator. Markdown roles. Task files are the queue. Cursor is a worker
 ./agents/yonose-cursor-loop.sh 001   # pickup only
 ```
 
-**Repo:** `raro42/yonose` (`YONOSE_GH_REPO`).  
+**Repo:** `raro42/itren` (`YONOSE_GH_REPO`).  
 **Queue:** `agents/tasks/` · `FEAT` → `WIP` → `UNTESTED` → `TESTING` → `CLOSED`.  
 **Single instance:** `agents/state/loop.pid` (gitignored).
 

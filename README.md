@@ -10,7 +10,7 @@ Private project by **Ralf Roeber**, hosted for our own needs. If it helps you: s
 
 ca / es / en · open source · Renfe data (CC BY 4.0)
 
-Repo: [github.com/raro42/yonose](https://github.com/raro42/yonose)
+Repo: [github.com/raro42/itren](https://github.com/raro42/itren)
 
 ---
 
@@ -56,8 +56,8 @@ If the feed has nothing honest to say, itren says that too. Empty truth beats a 
 ## Quick start (local)
 
 ```bash
-git clone git@github.com:raro42/yonose.git
-cd yonose
+git clone git@github.com:raro42/itren.git
+cd itren
 export YONOSE_VERSION=0.1.0
 export YONOSE_COMMIT=$(git rev-parse --short HEAD)
 docker compose up -d --build

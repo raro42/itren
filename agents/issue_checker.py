@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from redact_public_text import find_issues, redact, summarize_for_task  # noqa: E402
 
-GH_REPO = os.environ.get("YONOSE_GH_REPO", "raro42/yonose")
+GH_REPO = os.environ.get("YONOSE_GH_REPO", "raro42/itren")
 TASK_DIR = ROOT / "agents" / "tasks"
 TESTING_DIR = ROOT / "agents" / "testing" / "active"
 STATE_DIR = ROOT / "agents" / "state"

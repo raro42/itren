@@ -41,7 +41,7 @@ Sources we adapt: WeByansh 2027 trends, calm/AI-first 2026 lists, POS footer/ver
 
 Every public page footer must include:
 
-1. Link to `https://github.com/raro42/yonose` (`rel="noopener noreferrer"`, clear accessible name).
+1. Link to `https://github.com/raro42/itren` (`rel="noopener noreferrer"`, clear accessible name).
 2. App version (semver from `front/package.json` / build inject).
 3. Short commit hash (build-time inject, same idea as POS `commitHash` / landing version bar).
 

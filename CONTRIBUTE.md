@@ -1,14 +1,14 @@
-# Contribute to yonose
+# Contribute to itren
 
 Thanks for caring about waiting humans on Rodalies.
 
-The goal is simple usage growth: people on the platform open yonose once, then again the next delay. Good contributions make that loop tighter (truth, clarity, speed, accessibility). Flashy map features that duplicate existing Spain train maps are out of scope.
+The goal is simple usage growth: people on the platform open itren once, then again the next delay. Good contributions make that loop tighter (truth, clarity, speed, accessibility). Flashy map features that duplicate existing Spain train maps are out of scope.
 
 ## Ways to help (pick one)
 
 1. **Use it and file issues**  
-   Ride a real trip. When the board lies or yonose is wrong, open a GitHub issue with station names, time, and what you saw.  
-   [Issues](https://github.com/raro42/yonose/issues) · [New issue](https://github.com/raro42/yonose/issues/new) · in-app **Give feedback**
+   Ride a real trip. When the board lies or itren is wrong, open a GitHub issue with station names, time, and what you saw.  
+   [Issues](https://github.com/raro42/itren/issues) · [New issue](https://github.com/raro42/itren/issues/new) · in-app **Give feedback**
 
 2. **Accessibility**  
    Keyboard-only and screen-reader paths on phone and desktop. We treat a11y as product quality, not a badge.
@@ -34,8 +34,8 @@ The goal is simple usage growth: people on the platform open yonose once, then a
 ## Dev setup
 
 ```bash
-git clone git@github.com:raro42/yonose.git
-cd yonose
+git clone git@github.com:raro42/itren.git
+cd itren
 export YONOSE_VERSION=0.1.0
 export YONOSE_COMMIT=$(git rev-parse --short HEAD)
 docker compose up -d --build

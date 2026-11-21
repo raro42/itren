@@ -20,7 +20,7 @@ GTFS_MAX_AGE_HOURS = float(os.environ.get("YONOSE_GTFS_MAX_AGE_HOURS", "24"))
 HTTP_TIMEOUT = float(os.environ.get("YONOSE_HTTP_TIMEOUT", "45"))
 USER_AGENT = os.environ.get(
     "YONOSE_USER_AGENT",
-    "itren/0.1 (+https://github.com/raro42/yonose; CC-BY Renfe data)",
+    "itren/0.1 (+https://github.com/raro42/itren; CC-BY Renfe data)",
 )
 VERSION = os.environ.get("YONOSE_VERSION", "0.1.0")
 COMMIT = os.environ.get("YONOSE_COMMIT", "dev")

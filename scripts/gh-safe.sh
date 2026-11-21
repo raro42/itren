@@ -7,7 +7,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 REDACT="${ROOT}/scripts/redact_public_text.py"
-GH_REPO="${YONOSE_GH_REPO:-raro42/yonose}"
+GH_REPO="${YONOSE_GH_REPO:-raro42/itren}"
 
 if [[ ! -x "$(command -v python3)" ]]; then
   echo "gh-safe: python3 required" >&2

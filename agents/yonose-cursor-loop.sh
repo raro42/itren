@@ -6,7 +6,7 @@
 #   ./agents/yonose-cursor-loop.sh status
 #
 # Env:
-#   YONOSE_GH_REPO=raro42/yonose
+#   YONOSE_GH_REPO=raro42/itren
 #   AGENT_LOOP_SLEEP_MINUTES=5
 #   AGENT_LOOP_BUSY_SLEEP_SECONDS=15
 #   AGENT_USE_CURSOR=1|0
@@ -18,7 +18,7 @@ REPO_ROOT="$(cd "${SCRIPTDIR}/.." && pwd)"
 TASKDIR="${SCRIPTDIR}/tasks"
 TESTINGDIR="${SCRIPTDIR}/testing/active"
 STATEDIR="${SCRIPTDIR}/state"
-GH_REPO="${YONOSE_GH_REPO:-raro42/yonose}"
+GH_REPO="${YONOSE_GH_REPO:-raro42/itren}"
 sleepminutes="${AGENT_LOOP_SLEEP_MINUTES:-5}"
 sleepseconds=$((sleepminutes * 60))
 busy_sleep_seconds="${AGENT_LOOP_BUSY_SLEEP_SECONDS:-15}"
@@ -286,7 +286,7 @@ step_002_coder() {
 
   echo "----- 002: pending $(basename "$task")"
   run_cursor "002" \
-    "Follow agents/006-feature-coder/FEATURE-CODER.md and AGENTS.md. Read agents/workspace/lessons.md if present. Implement the lowest-numbered GitHub task under agents/tasks/ (FEAT-N or WIP-N that links raro42/yonose issues). Commit and push origin/main. Rename WIP- to UNTESTED- when ready and append Testing instructions. Do not close the GitHub issue. Do not paste secrets or home paths."
+    "Follow agents/006-feature-coder/FEATURE-CODER.md and AGENTS.md. Read agents/workspace/lessons.md if present. Implement the lowest-numbered GitHub task under agents/tasks/ (FEAT-N or WIP-N that links raro42/itren issues). Commit and push origin/main. Rename WIP- to UNTESTED- when ready and append Testing instructions. Do not close the GitHub issue. Do not paste secrets or home paths."
 }
 
 step_003_tester() {

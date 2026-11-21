@@ -4,7 +4,7 @@ export const environment = {
   version: '0.1.0',
   commitHash: 'dev',
   publicUrl: 'https://itren.zeitfenster.de',
-  githubUrl: 'https://github.com/raro42/yonose',
-  githubIssuesUrl: 'https://github.com/raro42/yonose/issues',
-  githubNewIssueUrl: 'https://github.com/raro42/yonose/issues/new',
+  githubUrl: 'https://github.com/raro42/itren',
+  githubIssuesUrl: 'https://github.com/raro42/itren/issues',
+  githubNewIssueUrl: 'https://github.com/raro42/itren/issues/new',
 };
