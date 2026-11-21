@@ -60,11 +60,23 @@ function fold(s: string): string {
     .toLowerCase();
 }
 
+function tokensOf(query: string): string[] {
+  return fold(query).split(/\s+/).filter(Boolean);
+}
+
+function nameHasTokens(name: string, tokens: string[]): boolean {
+  const n = fold(name);
+  return tokens.length > 0 && tokens.every((t) => n.includes(t));
+}
+
 function bestStation(query: string, hits: Station[]): Station | undefined {
   const q = fold(query);
   if (!q) return undefined;
   const exact = hits.find((s) => fold(s.name) === q);
   if (exact) return exact;
+  const tokens = tokensOf(query);
+  const tokenHits = hits.filter((s) => nameHasTokens(s.name, tokens));
+  if (tokenHits.length === 1) return tokenHits[0];
   const starts = hits.filter((s) => fold(s.name).startsWith(q) || fold(s.name).includes(q));
   if (starts.length === 1) return starts[0];
   const loose = hits.filter((s) => fold(s.name).includes(q) || q.includes(fold(s.name)));
@@ -117,6 +129,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   private toTimer: ReturnType<typeof setTimeout> | null = null;
   private fromBlurTimer: ReturnType<typeof setTimeout> | null = null;
   private toBlurTimer: ReturnType<typeof setTimeout> | null = null;
+  private fromSearchGen = 0;
+  private toSearchGen = 0;
   private picking = false;
 
   constructor(
@@ -197,6 +211,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   selectFrom(s: Station, ev?: Event): void {
     ev?.preventDefault();
     this.picking = true;
+    if (this.fromTimer) clearTimeout(this.fromTimer);
+    this.fromSearchGen += 1;
     this.knownNames.set(s.id, s.name);
     this.fromId.set(s.id);
     this.fromQuery = s.name;
@@ -211,6 +227,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   selectTo(s: Station, ev?: Event): void {
     ev?.preventDefault();
     this.picking = true;
+    if (this.toTimer) clearTimeout(this.toTimer);
+    this.toSearchGen += 1;
     this.knownNames.set(s.id, s.name);
     this.toId.set(s.id);
     this.toQuery = s.name;
@@ -395,7 +413,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   commitTyped(side: 'from' | 'to'): void {
+    const locked = side === 'from' ? this.fromId() : this.toId();
     const query = side === 'from' ? this.fromQuery : this.toQuery;
+    if (locked && fold(query) === fold(this.stationName(locked))) return;
     const hits = side === 'from' ? this.fromHits() : this.toHits();
     const pool = hits.length ? hits : QUICK;
     const best = bestStation(query, pool);
@@ -437,6 +457,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private searchStations(query: string, side: 'from' | 'to'): void {
     const q = query.trim();
+    const gen =
+      side === 'from' ? (this.fromSearchGen += 1) : (this.toSearchGen += 1);
     if (q.length < 2) {
       const hits = QUICK;
       if (side === 'from') this.fromHits.set(hits);
@@ -449,10 +471,22 @@ export class HomeComponent implements OnInit, OnDestroy {
       })
       .subscribe({
         next: (res) => {
+          if (side === 'from' ? gen !== this.fromSearchGen : gen !== this.toSearchGen) {
+            return;
+          }
           const hits = res.stations || [];
           for (const s of hits) this.knownNames.set(s.id, s.name);
           if (side === 'from') this.fromHits.set(hits);
           else this.toHits.set(hits);
+
+          const locked = side === 'from' ? this.fromId() : this.toId();
+          const lockedName = locked ? this.stationName(locked) : '';
+          // Do not override a station the user already picked.
+          if (locked && fold(lockedName) === fold(q)) return;
+          if (locked && nameHasTokens(lockedName, tokensOf(q)) && hits.some((h) => h.id === locked)) {
+            return;
+          }
+
           const best = bestStation(q, hits);
           const exact = best && fold(best.name) === fold(q);
           const unique = best && hits.length === 1 && fold(q).length >= 3;
@@ -462,6 +496,9 @@ export class HomeComponent implements OnInit, OnDestroy {
           }
         },
         error: () => {
+          if (side === 'from' ? gen !== this.fromSearchGen : gen !== this.toSearchGen) {
+            return;
+          }
           if (side === 'from') this.fromHits.set([]);
           else this.toHits.set([]);
         },

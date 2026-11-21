@@ -212,8 +212,15 @@ class GtfsStore:
                 by_name[key] = s
         items = sorted(by_name.values(), key=lambda s: s.name.casefold())
         if q:
-            ql = q.casefold().strip()
-            items = [s for s in items if ql in s.name.casefold()]
+            # Token match so "Terrassa Nord" hits "Terrassa Estació del Nord"
+            # (substring "terrassa nord" is not contiguous in the official name).
+            tokens = [t for t in q.casefold().split() if t]
+            if tokens:
+                items = [
+                    s
+                    for s in items
+                    if all(tok in s.name.casefold() for tok in tokens)
+                ]
         return items[:limit]
 
     def next_departures(self, from_id: str, to_id: str, limit: int = 6) -> list[Departure]:
