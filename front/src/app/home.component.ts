@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 import { environment } from '../environments/environment';
 import { LangService } from './lang.service';
 import { MsgKey } from './i18n';
@@ -40,6 +41,27 @@ const QUICK: Station[] = [
   { id: '79407', name: 'El Masnou', lat: 41.4770363, lon: 2.3103772 },
 ];
 
+function fold(s: string): string {
+  return s
+    .trim()
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase();
+}
+
+function bestStation(query: string, hits: Station[]): Station | undefined {
+  const q = fold(query);
+  if (!q) return undefined;
+  const exact = hits.find((s) => fold(s.name) === q);
+  if (exact) return exact;
+  const starts = hits.filter((s) => fold(s.name).startsWith(q) || fold(s.name).includes(q));
+  if (starts.length === 1) return starts[0];
+  // "masnou" → "El Masnou"
+  const loose = hits.filter((s) => fold(s.name).includes(q) || q.includes(fold(s.name)));
+  if (loose.length === 1) return loose[0];
+  return undefined;
+}
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -65,6 +87,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private fromTimer: ReturnType<typeof setTimeout> | null = null;
   private toTimer: ReturnType<typeof setTimeout> | null = null;
+  private fromBlurTimer: ReturnType<typeof setTimeout> | null = null;
+  private toBlurTimer: ReturnType<typeof setTimeout> | null = null;
+  private picking = false;
 
   constructor(
     private http: HttpClient,
@@ -80,19 +105,21 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (from) {
       this.fromId.set(from);
       this.fromQuery = this.stationName(from);
-      this.resolveName(from, 'from');
+      void this.resolveName(from, 'from');
     }
     if (to) {
       this.toId.set(to);
       this.toQuery = this.stationName(to);
-      this.resolveName(to, 'to');
+      void this.resolveName(to, 'to');
     }
-    if (from && to) this.loadNext();
+    if (from && to) void this.loadNext();
   }
 
   ngOnDestroy(): void {
     if (this.fromTimer) clearTimeout(this.fromTimer);
     if (this.toTimer) clearTimeout(this.toTimer);
+    if (this.fromBlurTimer) clearTimeout(this.fromBlurTimer);
+    if (this.toBlurTimer) clearTimeout(this.toBlurTimer);
   }
 
   msg(key: MsgKey, vars?: Record<string, string | number>): string {
@@ -103,54 +130,81 @@ export class HomeComponent implements OnInit, OnDestroy {
     return this.langSvc.lang();
   }
 
+  /** Enable Show when both sides have an id or enough typed text to resolve. */
+  canShow(): boolean {
+    if (this.loading()) return false;
+    if (this.fromId() && this.toId()) return true;
+    return fold(this.fromQuery).length >= 2 && fold(this.toQuery).length >= 2;
+  }
+
   stationName(id: string): string {
     return this.knownNames.get(id) || id;
   }
 
   onFromInput(value: string): void {
     this.fromQuery = value;
-    if (this.fromId() && value !== this.stationName(this.fromId())) {
+    if (this.fromId() && fold(value) !== fold(this.stationName(this.fromId()))) {
       this.fromId.set('');
     }
     this.fromOpen.set(true);
     if (this.fromTimer) clearTimeout(this.fromTimer);
-    this.fromTimer = setTimeout(() => this.searchStations(value, 'from'), 180);
+    this.fromTimer = setTimeout(() => this.searchStations(value, 'from'), 160);
   }
 
   onToInput(value: string): void {
     this.toQuery = value;
-    if (this.toId() && value !== this.stationName(this.toId())) {
+    if (this.toId() && fold(value) !== fold(this.stationName(this.toId()))) {
       this.toId.set('');
     }
     this.toOpen.set(true);
     if (this.toTimer) clearTimeout(this.toTimer);
-    this.toTimer = setTimeout(() => this.searchStations(value, 'to'), 180);
+    this.toTimer = setTimeout(() => this.searchStations(value, 'to'), 160);
   }
 
-  selectFrom(s: Station): void {
+  selectFrom(s: Station, ev?: Event): void {
+    ev?.preventDefault();
+    this.picking = true;
     this.knownNames.set(s.id, s.name);
     this.fromId.set(s.id);
     this.fromQuery = s.name;
     this.fromOpen.set(false);
     this.fromHits.set([]);
     localStorage.setItem(LS_FROM, s.id);
+    window.setTimeout(() => {
+      this.picking = false;
+    }, 0);
   }
 
-  selectTo(s: Station): void {
+  selectTo(s: Station, ev?: Event): void {
+    ev?.preventDefault();
+    this.picking = true;
     this.knownNames.set(s.id, s.name);
     this.toId.set(s.id);
     this.toQuery = s.name;
     this.toOpen.set(false);
     this.toHits.set([]);
     localStorage.setItem(LS_TO, s.id);
+    window.setTimeout(() => {
+      this.picking = false;
+    }, 0);
   }
 
-  closeFromSoon(): void {
-    window.setTimeout(() => this.fromOpen.set(false), 150);
+  onFromBlur(): void {
+    if (this.fromBlurTimer) clearTimeout(this.fromBlurTimer);
+    this.fromBlurTimer = setTimeout(() => {
+      if (this.picking) return;
+      this.commitTyped('from');
+      this.fromOpen.set(false);
+    }, 280);
   }
 
-  closeToSoon(): void {
-    window.setTimeout(() => this.toOpen.set(false), 150);
+  onToBlur(): void {
+    if (this.toBlurTimer) clearTimeout(this.toBlurTimer);
+    this.toBlurTimer = setTimeout(() => {
+      if (this.picking) return;
+      this.commitTyped('to');
+      this.toOpen.set(false);
+    }, 280);
   }
 
   swap(): void {
@@ -168,21 +222,23 @@ export class HomeComponent implements OnInit, OnDestroy {
     else localStorage.removeItem(LS_TO);
   }
 
-  loadNext(): void {
-    const from = this.fromId();
-    const to = this.toId();
+  async loadNext(): Promise<void> {
+    this.error.set(null);
+    const from = await this.ensureStation('from');
+    const to = await this.ensureStation('to');
     if (!from || !to) {
       this.error.set(this.msg('pickBoth'));
       return;
     }
     this.loading.set(true);
-    this.error.set(null);
     this.http
       .get<NextResponse>(`${environment.apiBase}/next`, { params: { from, to, limit: 5 } })
       .subscribe({
         next: (res) => {
           this.knownNames.set(res.from.id, res.from.name);
           this.knownNames.set(res.to.id, res.to.name);
+          this.fromQuery = res.from.name;
+          this.toQuery = res.to.name;
           this.result.set(res);
           this.loading.set(false);
         },
@@ -216,7 +272,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.knownNames.set(f.toId, f.toName);
     this.selectFrom({ id: f.fromId, name: f.fromName, lat: null, lon: null });
     this.selectTo({ id: f.toId, name: f.toName, lat: null, lon: null });
-    this.loadNext();
+    void this.loadNext();
   }
 
   formatTime(iso: string): string {
@@ -253,6 +309,47 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
+  commitTyped(side: 'from' | 'to'): void {
+    const query = side === 'from' ? this.fromQuery : this.toQuery;
+    const hits = side === 'from' ? this.fromHits() : this.toHits();
+    const pool = hits.length ? hits : QUICK;
+    const best = bestStation(query, pool);
+    if (!best) return;
+    if (side === 'from') this.selectFrom(best);
+    else this.selectTo(best);
+  }
+
+  private async ensureStation(side: 'from' | 'to'): Promise<string> {
+    const existing = side === 'from' ? this.fromId() : this.toId();
+    if (existing) return existing;
+    const query = side === 'from' ? this.fromQuery : this.toQuery;
+    const localHits = side === 'from' ? this.fromHits() : this.toHits();
+    const local = bestStation(query, localHits.length ? localHits : QUICK);
+    if (local) {
+      if (side === 'from') this.selectFrom(local);
+      else this.selectTo(local);
+      return local.id;
+    }
+    const q = query.trim();
+    if (q.length < 2) return '';
+    try {
+      const res = await firstValueFrom(
+        this.http.get<{ stations: Station[] }>(`${environment.apiBase}/stations`, {
+          params: { q, limit: 12 },
+        }),
+      );
+      const hits = res.stations || [];
+      for (const s of hits) this.knownNames.set(s.id, s.name);
+      const best = bestStation(q, hits);
+      if (!best) return '';
+      if (side === 'from') this.selectFrom(best);
+      else this.selectTo(best);
+      return best.id;
+    } catch {
+      return '';
+    }
+  }
+
   private searchStations(query: string, side: 'from' | 'to'): void {
     const q = query.trim();
     if (q.length < 2) {
@@ -271,6 +368,12 @@ export class HomeComponent implements OnInit, OnDestroy {
           for (const s of hits) this.knownNames.set(s.id, s.name);
           if (side === 'from') this.fromHits.set(hits);
           else this.toHits.set(hits);
+          // Auto-commit exact / single match while typing (helps phones).
+          const best = bestStation(q, hits);
+          if (best && fold(best.name) === fold(q)) {
+            if (side === 'from') this.selectFrom(best);
+            else this.selectTo(best);
+          }
         },
         error: () => {
           if (side === 'from') this.fromHits.set([]);
@@ -279,25 +382,26 @@ export class HomeComponent implements OnInit, OnDestroy {
       });
   }
 
-  private resolveName(id: string, side: 'from' | 'to'): void {
+  private async resolveName(id: string, side: 'from' | 'to'): Promise<void> {
     if (this.knownNames.has(id) && !/^\d+$/.test(this.knownNames.get(id)!)) {
       if (side === 'from') this.fromQuery = this.knownNames.get(id)!;
       else this.toQuery = this.knownNames.get(id)!;
       return;
     }
-    this.http
-      .get<{ stations: Station[] }>(`${environment.apiBase}/stations`, {
-        params: { q: id, limit: 5 },
-      })
-      .subscribe({
-        next: (res) => {
-          const hit = (res.stations || []).find((s) => s.id === id);
-          if (!hit) return;
-          this.knownNames.set(hit.id, hit.name);
-          if (side === 'from') this.fromQuery = hit.name;
-          else this.toQuery = hit.name;
-        },
-      });
+    try {
+      const res = await firstValueFrom(
+        this.http.get<{ stations: Station[] }>(`${environment.apiBase}/stations`, {
+          params: { q: id, limit: 5 },
+        }),
+      );
+      const hit = (res.stations || []).find((s) => s.id === id);
+      if (!hit) return;
+      this.knownNames.set(hit.id, hit.name);
+      if (side === 'from') this.fromQuery = hit.name;
+      else this.toQuery = hit.name;
+    } catch {
+      /* keep id as query */
+    }
   }
 
   private readFavorites(): Favorite[] {

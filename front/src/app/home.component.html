@@ -33,18 +33,24 @@
             [ngModel]="fromQuery"
             (ngModelChange)="onFromInput($event)"
             (focus)="onFromInput(fromQuery || '')"
-            (blur)="closeFromSoon()"
+            (blur)="onFromBlur()"
+            (keydown.enter)="$event.preventDefault(); commitTyped('from'); loadNext()"
             [attr.aria-expanded]="fromOpen()"
             aria-autocomplete="list"
             aria-controls="from-listbox"
             autocomplete="off"
+            enterkeyhint="search"
             data-testid="from-input"
           />
           @if (fromOpen() && fromHits().length) {
             <ul id="from-listbox" class="suggest" role="listbox">
               @for (s of fromHits(); track s.id) {
                 <li role="option">
-                  <button type="button" (mousedown)="selectFrom(s)">{{ s.name }}</button>
+                  <button
+                    type="button"
+                    (pointerdown)="selectFrom(s, $event)"
+                    (click)="selectFrom(s, $event)"
+                  >{{ s.name }}</button>
                 </li>
               }
             </ul>
@@ -66,18 +72,24 @@
             [ngModel]="toQuery"
             (ngModelChange)="onToInput($event)"
             (focus)="onToInput(toQuery || '')"
-            (blur)="closeToSoon()"
+            (blur)="onToBlur()"
+            (keydown.enter)="$event.preventDefault(); commitTyped('to'); loadNext()"
             [attr.aria-expanded]="toOpen()"
             aria-autocomplete="list"
             aria-controls="to-listbox"
             autocomplete="off"
+            enterkeyhint="search"
             data-testid="to-input"
           />
           @if (toOpen() && toHits().length) {
             <ul id="to-listbox" class="suggest" role="listbox">
               @for (s of toHits(); track s.id) {
                 <li role="option">
-                  <button type="button" (mousedown)="selectTo(s)">{{ s.name }}</button>
+                  <button
+                    type="button"
+                    (pointerdown)="selectTo(s, $event)"
+                    (click)="selectTo(s, $event)"
+                  >{{ s.name }}</button>
                 </li>
               }
             </ul>
@@ -90,7 +102,7 @@
           type="button"
           class="primary"
           (click)="loadNext()"
-          [disabled]="!fromId() || !toId() || loading()"
+          [disabled]="!canShow()"
           data-testid="show-next"
         >
           {{ loading() ? msg('loading') : msg('show') }}
