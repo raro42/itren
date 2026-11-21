@@ -2,11 +2,63 @@
 :host {
   display: flex;
   flex-direction: column;
-  height: 100dvh;
-  max-height: 100dvh;
   width: 100%;
-  overflow: hidden;
   background: var(--color-bg-elevated);
+}
+
+/* Mobile: document scroll so the header can leave when the keyboard opens.
+   Nested 100dvh + fixed chrome was eating the suggest list. */
+@media (max-width: 719px) {
+  :host {
+    min-height: 100dvh;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .top {
+    position: static;
+    padding: var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .brand {
+    font-size: 1.45rem;
+  }
+
+  .brand-block .tagline {
+    display: none;
+  }
+
+  .header-tools {
+    gap: 0.5rem;
+  }
+
+  .nav a,
+  .nav-btn {
+    height: 2.25rem;
+    padding: 0 0.45rem;
+    font-size: 0.85rem;
+  }
+
+  .lang {
+    height: 2.25rem;
+  }
+
+  .scroll {
+    overflow: visible;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+}
+
+/* Desktop: keep header visible in a viewport shell. */
+@media (min-width: 720px) {
+  :host {
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
 }
 
 .skip-link {

@@ -208,6 +208,18 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.toTimer = setTimeout(() => this.searchStations(value, 'to'), 160);
   }
 
+  /** Mobile: bring the field into view above the keyboard; then open typeahead. */
+  onStationFocus(side: 'from' | 'to', ev: FocusEvent): void {
+    const el = ev.target as HTMLElement | null;
+    if (el && typeof el.scrollIntoView === 'function') {
+      window.setTimeout(() => {
+        el.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
+      }, 50);
+    }
+    if (side === 'from') this.onFromInput(this.fromQuery || '');
+    else this.onToInput(this.toQuery || '');
+  }
+
   selectFrom(s: Station, ev?: Event): void {
     ev?.preventDefault();
     this.picking = true;
