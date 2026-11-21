@@ -1,0 +1,48 @@
+---
+description: Human-first, agent-ready, accessible UX for yonose
+globs: front/**
+alwaysApply: true
+---
+
+# UX: human first, agent ready, accessible
+
+Sources we adapt: WeByansh 2027 trends, calm/AI-first 2026 lists, POS footer/version patterns. Skip award-site gimmicks (WebGL heroes, scroll hijack, glass under body text).
+
+## Human first (waiting at the station)
+
+1. One job per screen: pick trip, see next train + delay, decide wait vs leave.
+2. Calm layout: generous space, plain language, one primary action. No card spam, no marketing dashboard.
+3. Anti-template: avoid Inter + purple gradient + badge-above-H1 + glass feature cards. Brand is Amvara (navy + red + Open Sans); see `brand-amvara-colors.mdc` and `design/tokens.css`. Mood: platform / night board, not SaaS sameness.
+4. Day and night: respect `prefers-color-scheme` (tokens already define both); offer an explicit toggle later. Dark is a visitor choice, not a costume.
+5. Motion only explains state (arrival updated, leave CTA). Honour `prefers-reduced-motion`. No Lenis/scroll hijack.
+6. Phone first. Touch targets >= 44px. Whole row tappable for list items.
+7. localStorage for last OD, favorites, language (no account required for MVP).
+
+## Agent ready (machines must parse the page)
+
+1. Real text in the DOM: one clear `h1`, ordered headings, no canvas-only copy.
+2. Server-rendered or statically meaningful first paint for the decision UI (times, delay, situation).
+3. Plain facts an engine can quote: station names, next departure, delay minutes, leave recommendation.
+4. Stable `data-testid` on critical controls (origin, destination, leave CTA, footer version).
+5. Skip overlay "accessibility widgets". Build a11y into markup.
+
+## Blind / screen-reader navigation (non-negotiable)
+
+1. Semantic HTML: `header`, `main`, `nav`, `footer`, landmarks, lists for arrivals.
+2. Skip link to `#main` as first focusable control.
+3. Every control has an accessible name (label, `aria-label`, or visible text). Announce live updates with `aria-live="polite"` for board changes.
+4. Visible focus rings (WCAG). Keyboard: Tab order matches visual order; Escape closes dialogs.
+5. Contrast WCAG AA (4.5:1 text, 3:1 UI chrome). See `ui-contrast.mdc`.
+6. Do not rely on colour alone for delay vs on-time. Pair with text ("+12 min") or icon + text.
+7. Images/icons that matter need text alternatives; decorative icons `aria-hidden="true"`.
+8. Test with keyboard + a screen reader path before calling a UI task done.
+
+## Footer (from POS, slimmed)
+
+Every public page footer must include:
+
+1. Link to `https://github.com/raro42/yonose` (`rel="noopener noreferrer"`, clear accessible name).
+2. App version (semver from `front/package.json` / build inject).
+3. Short commit hash (build-time inject, same idea as POS `commitHash` / landing version bar).
+
+Keep the version bar quiet. No marketing CTA stack like POS landing unless we add a real secondary product page.

@@ -1,0 +1,86 @@
+/**
+ * yonose brand tokens from amvara.de (live site + Open Sans).
+ * Import into Angular global styles when front lands.
+ * Material indigo/pink defaults are NOT brand. Use these.
+ */
+
+:root {
+  /* Surfaces */
+  --color-bg: #f9f9f9;
+  --color-bg-elevated: #ffffff;
+  --color-bg-muted: #fafafa;
+
+  /* Text */
+  --color-text: #032047;
+  --color-text-muted: #808080;
+  --color-text-inverse: #ffffff;
+
+  /* Brand accent (Amvara red) */
+  --color-accent: #f1162f;
+  --color-on-accent: #ffffff;
+  --color-accent-hover: #d41228;
+
+  /* Secondary chrome (PWA / links; from theme-color) */
+  --color-secondary: #1976d2;
+  --color-on-secondary: #ffffff;
+
+  /* Status (board truth; pair with text, not colour alone) */
+  --color-ok: #1b7a3e;
+  --color-warn: #a15c00;
+  --color-delay: #f1162f;
+
+  /* Focus / borders */
+  --color-border: #d6d6d6;
+  --color-focus: #1976d2;
+  --color-deco-line: #cccccc;
+
+  /* Type */
+  --font-sans: "Open Sans", "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", "Menlo", monospace;
+
+  /* Space */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --touch-min: 44px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0b1524;
+    --color-bg-elevated: #132033;
+    --color-bg-muted: #101c2e;
+    --color-text: #f2f4f7;
+    --color-text-muted: #9aa3b2;
+    --color-text-inverse: #032047;
+    --color-accent: #ff4d5e;
+    --color-on-accent: #0b1524;
+    --color-accent-hover: #ff6b79;
+    --color-secondary: #64b5f6;
+    --color-on-secondary: #0b1524;
+    --color-ok: #6bcf8e;
+    --color-warn: #e0a84a;
+    --color-delay: #ff4d5e;
+    --color-border: #2a3a52;
+    --color-focus: #64b5f6;
+    --color-deco-line: #3a4a62;
+  }
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+}

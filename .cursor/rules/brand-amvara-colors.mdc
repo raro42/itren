@@ -1,0 +1,29 @@
+---
+description: Use amvara.de colour scheme for yonose UI
+globs: front/**,design/**
+alwaysApply: true
+---
+
+# Brand colours (amvara.de)
+
+Source of truth: live `amvara.de` + `design/tokens.css`.
+
+| Role | Light | Notes |
+|------|-------|-------|
+| Background | `#f9f9f9` / `#fafafa` | Calm ground |
+| Text | `#032047` | Navy, primary copy |
+| Muted | `#808080` | Secondary copy |
+| Accent | `#f1162f` | CTA, delay emphasis, underline |
+| On accent | `#ffffff` | Text on red buttons |
+| Secondary | `#1976d2` | theme-color, focus, links |
+| Font | Open Sans | Match Amvara; bold via weight 700 |
+
+Dark mode: see `design/tokens.css` (`prefers-color-scheme`). Keep red as the loud accent.
+
+## Do not
+
+- Do not use Material default indigo `#3f51b5` or pink `#ff4081` as brand.
+- Do not invent a purple / terracotta / cream SaaS palette.
+- Do not put body text on glass over photos without AA contrast.
+
+When adding UI colours, extend tokens first, then reference `var(--color-*)`.

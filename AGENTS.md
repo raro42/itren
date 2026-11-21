@@ -1,4 +1,4 @@
-# AGENTS — yonose
+# AGENTS - yonose
 
 Thin agent loop. Shell orchestrator + markdown roles. Cursor is a worker.
 
@@ -19,10 +19,16 @@ Station boards that go blank or lie (Rodalies / Maresme stories) are the failure
 |----------|--------|
 | Scope | All Rodalies stations possible (start corridor OK, no artificial 3-station cap) |
 | Languages | Catalan, Spanish, English |
-| UX | Visually strong, tell the waiting-human story, easy |
+| UX | Human first, calm, phone-first; visually honest (platform / night board), not AI-template SaaS |
+| Brand | amvara.de colours: navy `#032047`, red `#f1162f`, ground `#f9f9f9`, muted `#808080`, secondary `#1976d2`, Open Sans. Tokens in `design/tokens.css` |
+| Agent-ready | Real H1 + DOM text; facts quoteable; stable test ids; meaningful first paint |
+| A11y | Screen-reader and keyboard first-class (skip link, landmarks, live regions, WCAG AA). No a11y overlay widgets |
+| Habit | Browser `localStorage` for last trip, favorites, language |
+| Footer | GitHub repo link + semver + short commit hash on every public page |
 | Answers | Real data (Renfe GTFS + GTFS-RT + alerts); AI to explain situation + related news |
-| Deploy | Public site `yonose.zeitfenster.de` (ops host is private; see local notes, not git) |
+| Deploy | Public site `yonose.zeitfenster.de` (ops host is private; see local notes, not git). SSL/HAProxy: other bot |
 | Money | Free for now |
+| Stack rules | Slim POS habits: see `.cursor/rules/` (`agent-stack-pos-adapted`, `ui-human-agent-a11y`, `ui-contrast`) |
 
 ## Autopilot / human contact
 
@@ -52,7 +58,7 @@ For yonose visual checks: a **separate** Chromium profile and debug port, docume
 ./agents/yonose-cursor-loop.sh status
 ```
 
-Queue: `agents/tasks/` — `FEAT` → `WIP` → `UNTESTED` → `TESTING` → `CLOSED`.
+Queue: `agents/tasks/` - `FEAT` -> `WIP` -> `UNTESTED` -> `TESTING` -> `CLOSED`.
 Open issues on `raro42/yonose` feed pickup (`agents/issue_checker.py`).
 
 Server-side `cursor-agent` may exist on the deploy host; prefer it for ops jobs, not every page view. Details stay out of this file.
