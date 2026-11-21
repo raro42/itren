@@ -42,11 +42,13 @@ const LS_FROM = 'itren.from';
 const LS_TO = 'itren.to';
 const LS_FAV = 'itren.favorites';
 
-/** Maresme sample OD: always available even before search. */
+/** Sample OD: always available even before search. */
 const QUICK: Station[] = [
   { id: '79604', name: 'Pineda de Mar', lat: 41.6224449, lon: 2.69355042 },
   { id: '79500', name: 'Mataró', lat: 41.5333852, lon: 2.44553025 },
   { id: '79407', name: 'El Masnou', lat: 41.4770363, lon: 2.3103772 },
+  { id: '78700', name: 'Terrassa Estació del Nord', lat: 41.5697825, lon: 2.01435428 },
+  { id: '71801', name: 'Barcelona-Sants', lat: 41.3798632, lon: 2.14101688 },
 ];
 
 function fold(s: string): string {
