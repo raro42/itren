@@ -286,7 +286,7 @@ step_002_coder() {
 
   echo "----- 002: pending $(basename "$task")"
   run_cursor "002" \
-    "Follow agents/006-feature-coder/FEATURE-CODER.md and AGENTS.md. Read agents/workspace/lessons.md if present. Implement the lowest-numbered GitHub task under agents/tasks/ (FEAT-N or WIP-N that links raro42/itren issues). Commit and push origin/main. Rename WIP- to UNTESTED- when ready and append Testing instructions. Do not close the GitHub issue. Do not paste secrets or home paths."
+    "Follow agents/006-feature-coder/FEATURE-CODER.md, AGENTS.md, and agents/workspace/lessons.md. Implement the lowest-numbered GitHub task under agents/tasks/ (FEAT-N or WIP-N that links raro42/itren issues). Obey Forbidden / overnight slice in the task file as hard stops (no routing). Smallest change. Commit and push origin/main. Rename WIP- to UNTESTED- when ready and append Testing instructions. Do not close the GitHub issue. Do not paste secrets, home paths, or private ops paths."
 }
 
 step_003_tester() {
@@ -313,7 +313,7 @@ step_003_tester() {
     ./scripts/gh-safe.sh issue comment "$issue_n" --body "Agent 003: testing (\`$(basename "$task")\`)." 2>/dev/null || true
   fi
   run_cursor "003" \
-    "Follow agents/testing/TESTER.md. Test the GitHub TESTING- task under agents/testing/active/. Always run the Quality pass (change review, public smoke, gzip/perf, SEO/agentic) and append a Test report. On pass: move to agents/tasks/CLOSED-N-…. On fail: back to agents/tasks/WIP-N-… with the report. Do not close the GitHub issue. Do not paste secrets."
+    "Follow agents/testing/TESTER.md. Test the GitHub TESTING- task under agents/testing/active/. Always run the Quality pass (change review, public smoke, gzip/perf, SEO/agentic) and append a Test report. On pass: move to agents/tasks/CLOSED-N-…. On fail: back to agents/tasks/WIP-N-… with the report. Do not require a human platform ride for overnight slices. Do not close the GitHub issue. Do not paste secrets or home paths."
 }
 
 step_004_handoff() {
@@ -339,7 +339,7 @@ step_004_handoff() {
   if [[ "$already_complete" -ne 1 ]]; then
     ./scripts/gh-safe.sh issue comment "$issue_n" --body "Agent 004: closing review + changelog (\`${base}\`)." 2>/dev/null || true
     run_cursor "004" \
-      "Follow agents/004-closing-reviewer/CLOSING-REVIEWER-PROMPT.md. Review ${base}. Align CHANGELOG.md if needed. Commit and push origin/main if needed. Then write Handoff: complete in the task file. Do not paste secrets."
+      "Follow agents/004-closing-reviewer/CLOSING-REVIEWER-PROMPT.md. Review ${base}. Align CHANGELOG.md if needed. Commit and push origin/main if needed. If human-later items remain (platform ride, full Lighthouse), write Handoff: deferred and leave the issue open. Only write Handoff: complete when the GitHub issue overnight slice is truly done and no human-later items remain. Do not paste secrets or home paths."
   else
     echo "----- 004: already marked complete; closing GitHub if still open"
   fi

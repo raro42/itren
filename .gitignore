@@ -1,5 +1,11 @@
 agents/state/
 agents/testing/active/
+# Queue files are local loop state (keep git sync clean for AFK).
+agents/tasks/FEAT-*.md
+agents/tasks/WIP-*.md
+agents/tasks/UNTESTED-*.md
+agents/tasks/CLOSED-*.md
+agents/tasks/TESTING-*.md
 .angular/
 api/data/
 dist/

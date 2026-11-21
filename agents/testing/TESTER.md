@@ -14,6 +14,7 @@ Repo: `raro42/itren`
 5. Fail → move back to `agents/tasks/WIP-N-…` with a short **Test report** section.
 6. Do **not** close the GitHub issue.
 7. Comment via `./scripts/gh-safe.sh` only. No secrets or home paths.
+8. Overnight / AFK slices: do **not** fail the task for missing human platform ride. Note it under Test report as deferred.
 
 ---
 

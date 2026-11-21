@@ -16,3 +16,4 @@ Review a `CLOSED-N-*.md` task whose GitHub issue is still open.
 - Re-open large scope.
 - Paste secrets or home paths.
 - Close via Cursor if the loop will close; prefer marking handoff and letting the orchestrator finish.
+- If the task or issue still lists **human later** items (platform ride, full Lighthouse), write `Handoff: deferred` with a one-line reason and **leave the GitHub issue open**.
