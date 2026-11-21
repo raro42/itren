@@ -6,7 +6,7 @@ itren is a free web app for one moment: you are already at a Rodalies station, a
 
 Private project by **Ralf Roeber**, hosted for our own needs. If it helps you: star the repo, share it.
 
-**Try it:** [itren.zeitfenster.de](https://itren.zeitfenster.de) (old host `yonose.zeitfenster.de` still aliases for now)
+**Try it:** [itren.zeitfenster.de](https://itren.zeitfenster.de)
 
 ca / es / en · open source · Renfe data (CC BY 4.0)
 
