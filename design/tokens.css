@@ -1,6 +1,6 @@
 /**
  * yonose brand tokens from amvara.de (live site + Open Sans).
- * Import into Angular global styles when front lands.
+ * Runtime: no CDN. Front vendors Open Sans under public/fonts.
  * Material indigo/pink defaults are NOT brand. Use these.
  */
 
@@ -36,7 +36,7 @@
 
   /* Type */
   --font-sans: "Open Sans", "Segoe UI", sans-serif;
-  --font-mono: "IBM Plex Mono", "Menlo", monospace;
+  --font-mono: ui-monospace, "Cascadia Mono", "Menlo", monospace;
 
   /* Space */
   --space-1: 0.25rem;

@@ -1,0 +1,71 @@
+.feedback {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 36rem;
+}
+
+.feedback h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 4vw, 1.75rem);
+  color: var(--color-text);
+}
+
+.feedback p {
+  margin: 0;
+  line-height: 1.55;
+  color: var(--color-text);
+}
+
+.feedback-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.primary,
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch-min);
+  padding: 0.75rem 1.1rem;
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.primary {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border: none;
+}
+
+.primary:hover {
+  background: var(--color-accent-hover);
+  box-shadow: 0 2px 8px rgba(241, 22, 47, 0.28);
+}
+
+.ghost {
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+}
+
+.ghost:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: var(--color-bg-muted);
+}
+
+.note {
+  color: var(--color-text-muted) !important;
+  font-size: 0.9rem;
+}
+
+a[routerLink] {
+  color: var(--color-secondary);
+  font-weight: 600;
+}

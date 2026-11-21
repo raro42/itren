@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="yonose">
+  <rect width="32" height="32" rx="6" fill="#032047"/>
+  <text
+    x="16"
+    y="23.5"
+    text-anchor="middle"
+    font-family="DejaVu Sans, Liberation Sans, Arial, sans-serif"
+    font-weight="700"
+    font-size="22"
+    fill="#f1162f"
+  >y</text>
+</svg>

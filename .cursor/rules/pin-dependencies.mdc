@@ -1,0 +1,30 @@
+---
+description: Pin every dependency exactly (npm, pip, any package manager)
+alwaysApply: true
+---
+
+# Pin all dependencies
+
+Never leave floating ranges.
+
+## npm / front
+
+1. Exact versions only in `package.json` (`1.2.3`, never `^` / `~` / `>=`).
+2. Always commit `package-lock.json`.
+3. Install with `npm ci --ignore-scripts` only. Never `npm install` in CI or agents.
+4. `front/.npmrc` keeps `save-exact=true` and `ignore-scripts=true`.
+5. Docker base images: pin digests or explicit tags (`node:22.23.4-bookworm-slim`), no `latest`.
+6. Angular: keep all `@angular/*` + `@angular-devkit/build-angular` + `@angular/cli` on the **same** exact minor (currently **22.3.0**). TypeScript must satisfy that release's peer range (Angular 22.3 → `typescript@6.0.x`).
+
+## Python / api
+
+1. Pin every direct dep in `requirements.txt` with `==`.
+2. Prefer a full lock (`requirements.lock` or pinned transitive list) for production images.
+3. No unpinned extras that pull unknown trees without listing them. Prefer explicit packages over `uvicorn[standard]` if the extra set drifts.
+4. Docker: pin `python:3.12.x-slim-...` tags.
+
+## General
+
+1. New dependency = pin + reason in the PR/commit message.
+2. Unclear or range-only deps are a blocker, not a nice-to-have.
+3. Same rule for any other manager (cargo, go.mod, apt in Dockerfiles): pin versions.

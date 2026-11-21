@@ -1,0 +1,165 @@
+<section class="trip" aria-labelledby="trip-heading">
+  <h2 id="trip-heading">{{ msg('show') }}</h2>
+
+  <p class="quick-label">{{ msg('quickLabel') }}</p>
+  <div class="quick" role="group" [attr.aria-label]="msg('quickLabel')">
+    <button
+      type="button"
+      class="quick-chip"
+      (click)="useFavorite({ fromId: '79604', toId: '79407', fromName: 'Pineda de Mar', toName: 'El Masnou' })"
+      data-testid="quick-pineda-masnou"
+    >
+      Pineda de Mar → El Masnou
+    </button>
+    <button
+      type="button"
+      class="quick-chip"
+      (click)="useFavorite({ fromId: '79500', toId: '79407', fromName: 'Mataró', toName: 'El Masnou' })"
+      data-testid="quick-mataro-masnou"
+    >
+      Mataró → El Masnou
+    </button>
+  </div>
+
+  <label class="field">
+    <span>{{ msg('from') }}</span>
+    <div class="combo">
+      <input
+        type="search"
+        role="combobox"
+        [placeholder]="msg('search')"
+        [ngModel]="fromQuery"
+        (ngModelChange)="onFromInput($event)"
+        (focus)="onFromInput(fromQuery || '')"
+        (blur)="closeFromSoon()"
+        [attr.aria-expanded]="fromOpen()"
+        aria-autocomplete="list"
+        aria-controls="from-listbox"
+        autocomplete="off"
+        data-testid="from-input"
+      />
+      @if (fromOpen() && fromHits().length) {
+        <ul id="from-listbox" class="suggest" role="listbox">
+          @for (s of fromHits(); track s.id) {
+            <li role="option">
+              <button type="button" (mousedown)="selectFrom(s)">{{ s.name }}</button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </label>
+
+  <button type="button" class="swap" (click)="swap()" [attr.aria-label]="msg('swap')" data-testid="swap">
+    ⇅
+  </button>
+
+  <label class="field">
+    <span>{{ msg('to') }}</span>
+    <div class="combo">
+      <input
+        type="search"
+        role="combobox"
+        [placeholder]="msg('search')"
+        [ngModel]="toQuery"
+        (ngModelChange)="onToInput($event)"
+        (focus)="onToInput(toQuery || '')"
+        (blur)="closeToSoon()"
+        [attr.aria-expanded]="toOpen()"
+        aria-autocomplete="list"
+        aria-controls="to-listbox"
+        autocomplete="off"
+        data-testid="to-input"
+      />
+      @if (toOpen() && toHits().length) {
+        <ul id="to-listbox" class="suggest" role="listbox">
+          @for (s of toHits(); track s.id) {
+            <li role="option">
+              <button type="button" (mousedown)="selectTo(s)">{{ s.name }}</button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </label>
+
+  <div class="actions">
+    <button
+      type="button"
+      class="primary"
+      (click)="loadNext()"
+      [disabled]="!fromId() || !toId() || loading()"
+      data-testid="show-next"
+    >
+      {{ loading() ? msg('loading') : msg('show') }}
+    </button>
+    <button type="button" class="ghost" (click)="saveFavorite()" [disabled]="!fromId() || !toId()">
+      {{ msg('saveFavorite') }}
+    </button>
+  </div>
+  @if (shareStatus()) {
+    <p class="share-status" role="status">{{ shareStatus() }}</p>
+  }
+</section>
+
+@if (favorites().length) {
+  <section class="favs" [attr.aria-label]="msg('favorites')">
+    <h2>{{ msg('favorites') }}</h2>
+    <ul>
+      @for (f of favorites(); track f.fromId + f.toId) {
+        <li>
+          <button type="button" (click)="useFavorite(f)">{{ f.fromName }} → {{ f.toName }}</button>
+        </li>
+      }
+    </ul>
+  </section>
+}
+
+@if (error()) {
+  <p class="error" role="alert">{{ error() }}</p>
+}
+
+@if (result(); as res) {
+  <section class="board" aria-live="polite" aria-labelledby="board-heading">
+    <h2 id="board-heading">
+      {{ res.from.name }} → {{ res.to.name }}
+    </h2>
+
+    @if (!res.departures.length) {
+      <p>{{ msg('empty') }}</p>
+    } @else {
+      <ol class="deps">
+        @for (d of res.departures; track d.trip_id) {
+          <li [class.leave]="d.suggest_leave">
+            <div class="line-row">
+              <span class="line">{{ d.line }}</span>
+              <time [attr.datetime]="d.scheduled">{{ formatTime(d.scheduled) }}</time>
+              <span class="delay" [attr.aria-label]="delayLabel(d)">{{ delayLabel(d) }}</span>
+            </div>
+            <p class="head">{{ d.headsign }}</p>
+            <p class="sit">{{ d.situation }}</p>
+            <p class="wait">{{ msg('wait', { m: d.wait_minutes }) }}</p>
+            @if (d.suggest_leave) {
+              <p class="leave-flag">{{ msg('leave') }}</p>
+            }
+          </li>
+        }
+      </ol>
+    }
+
+    @if (res.taxi; as taxi) {
+      <p>
+        <a class="taxi" [href]="taxi.maps" target="_blank" rel="noopener noreferrer" data-testid="taxi">
+          {{ msg('taxi') }}
+        </a>
+      </p>
+    }
+
+    <p class="attr">{{ res.attribution || msg('attribution') }}</p>
+  </section>
+}
+
+<section class="why" aria-labelledby="why-heading">
+  <h2 id="why-heading">{{ msg('whyTitle') }}</h2>
+  <p>{{ msg('whyLead') }}</p>
+</section>

@@ -1,0 +1,16 @@
+---
+description: App must be served 100% locally (no CDN fonts/scripts)
+globs: front/**
+alwaysApply: true
+---
+
+# No CDN / no runtime internet assets
+
+The browser must load the app **only** from our origin (and same-origin `/api`).
+
+1. Do **not** link Google Fonts, jsDelivr, unpkg, CDNs, analytics, or remote CSS/JS.
+2. Fonts live under `front/public/fonts/` and are referenced with local `/fonts/...` URLs.
+3. CSP must not allow `fonts.googleapis.com` / `fonts.gstatic.com` or other third-party hosts for assets.
+4. `connect-src 'self'` only (API via same host `/api`).
+5. User-clicked outbound links (GitHub, Maps/taxi) are OK. Prefetching or embedding those resources is not.
+6. GTFS feeds are **server-side** only (API container), never fetched from the browser.

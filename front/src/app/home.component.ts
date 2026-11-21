@@ -1,0 +1,310 @@
+import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { environment } from '../environments/environment';
+import { LangService } from './lang.service';
+import { MsgKey } from './i18n';
+import { shareWithFriend } from './share';
+
+type Station = { id: string; name: string; lat: number | null; lon: number | null };
+type Departure = {
+  trip_id: string;
+  line: string;
+  headsign: string;
+  scheduled: string;
+  delay_seconds: number | null;
+  realtime: boolean;
+  wait_minutes: number;
+  situation: string;
+  suggest_leave: boolean;
+};
+type NextResponse = {
+  from: Station;
+  to: Station;
+  departures: Departure[];
+  taxi: { maps: string; label: string } | null;
+  attribution: string;
+  empty_reason: string | null;
+};
+type Favorite = { fromId: string; toId: string; fromName: string; toName: string };
+
+const LS_FROM = 'yonose.from';
+const LS_TO = 'yonose.to';
+const LS_FAV = 'yonose.favorites';
+
+/** Maresme sample OD: always available even before search. */
+const QUICK: Station[] = [
+  { id: '79604', name: 'Pineda de Mar', lat: 41.6224449, lon: 2.69355042 },
+  { id: '79500', name: 'Mataró', lat: 41.5333852, lon: 2.44553025 },
+  { id: '79407', name: 'El Masnou', lat: 41.4770363, lon: 2.3103772 },
+];
+
+@Component({
+  selector: 'app-home',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './home.component.html',
+  styleUrl: './home.component.css',
+})
+export class HomeComponent implements OnInit, OnDestroy {
+  fromId = signal('');
+  toId = signal('');
+  fromQuery = '';
+  toQuery = '';
+  fromHits = signal<Station[]>([]);
+  toHits = signal<Station[]>([]);
+  fromOpen = signal(false);
+  toOpen = signal(false);
+  loading = signal(false);
+  error = signal<string | null>(null);
+  result = signal<NextResponse | null>(null);
+  favorites = signal<Favorite[]>([]);
+  shareStatus = signal<string | null>(null);
+  knownNames = new Map<string, string>();
+
+  private fromTimer: ReturnType<typeof setTimeout> | null = null;
+  private toTimer: ReturnType<typeof setTimeout> | null = null;
+
+  constructor(
+    private http: HttpClient,
+    private langSvc: LangService,
+  ) {
+    for (const s of QUICK) this.knownNames.set(s.id, s.name);
+  }
+
+  ngOnInit(): void {
+    this.favorites.set(this.readFavorites());
+    const from = localStorage.getItem(LS_FROM) || '';
+    const to = localStorage.getItem(LS_TO) || '';
+    if (from) {
+      this.fromId.set(from);
+      this.fromQuery = this.stationName(from);
+      this.resolveName(from, 'from');
+    }
+    if (to) {
+      this.toId.set(to);
+      this.toQuery = this.stationName(to);
+      this.resolveName(to, 'to');
+    }
+    if (from && to) this.loadNext();
+  }
+
+  ngOnDestroy(): void {
+    if (this.fromTimer) clearTimeout(this.fromTimer);
+    if (this.toTimer) clearTimeout(this.toTimer);
+  }
+
+  msg(key: MsgKey, vars?: Record<string, string | number>): string {
+    return this.langSvc.msg(key, vars);
+  }
+
+  lang() {
+    return this.langSvc.lang();
+  }
+
+  stationName(id: string): string {
+    return this.knownNames.get(id) || id;
+  }
+
+  onFromInput(value: string): void {
+    this.fromQuery = value;
+    if (this.fromId() && value !== this.stationName(this.fromId())) {
+      this.fromId.set('');
+    }
+    this.fromOpen.set(true);
+    if (this.fromTimer) clearTimeout(this.fromTimer);
+    this.fromTimer = setTimeout(() => this.searchStations(value, 'from'), 180);
+  }
+
+  onToInput(value: string): void {
+    this.toQuery = value;
+    if (this.toId() && value !== this.stationName(this.toId())) {
+      this.toId.set('');
+    }
+    this.toOpen.set(true);
+    if (this.toTimer) clearTimeout(this.toTimer);
+    this.toTimer = setTimeout(() => this.searchStations(value, 'to'), 180);
+  }
+
+  selectFrom(s: Station): void {
+    this.knownNames.set(s.id, s.name);
+    this.fromId.set(s.id);
+    this.fromQuery = s.name;
+    this.fromOpen.set(false);
+    this.fromHits.set([]);
+    localStorage.setItem(LS_FROM, s.id);
+  }
+
+  selectTo(s: Station): void {
+    this.knownNames.set(s.id, s.name);
+    this.toId.set(s.id);
+    this.toQuery = s.name;
+    this.toOpen.set(false);
+    this.toHits.set([]);
+    localStorage.setItem(LS_TO, s.id);
+  }
+
+  closeFromSoon(): void {
+    window.setTimeout(() => this.fromOpen.set(false), 150);
+  }
+
+  closeToSoon(): void {
+    window.setTimeout(() => this.toOpen.set(false), 150);
+  }
+
+  swap(): void {
+    const a = this.fromId();
+    const b = this.toId();
+    const aq = this.fromQuery;
+    const bq = this.toQuery;
+    this.fromId.set(b);
+    this.toId.set(a);
+    this.fromQuery = bq;
+    this.toQuery = aq;
+    if (b) localStorage.setItem(LS_FROM, b);
+    else localStorage.removeItem(LS_FROM);
+    if (a) localStorage.setItem(LS_TO, a);
+    else localStorage.removeItem(LS_TO);
+  }
+
+  loadNext(): void {
+    const from = this.fromId();
+    const to = this.toId();
+    if (!from || !to) {
+      this.error.set(this.msg('pickBoth'));
+      return;
+    }
+    this.loading.set(true);
+    this.error.set(null);
+    this.http
+      .get<NextResponse>(`${environment.apiBase}/next`, { params: { from, to, limit: 5 } })
+      .subscribe({
+        next: (res) => {
+          this.knownNames.set(res.from.id, res.from.name);
+          this.knownNames.set(res.to.id, res.to.name);
+          this.result.set(res);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.loading.set(false);
+          this.error.set(this.msg('error'));
+        },
+      });
+  }
+
+  saveFavorite(): void {
+    const from = this.fromId();
+    const to = this.toId();
+    if (!from || !to) return;
+    const fav: Favorite = {
+      fromId: from,
+      toId: to,
+      fromName: this.stationName(from),
+      toName: this.stationName(to),
+    };
+    const next = [fav, ...this.favorites().filter((f) => !(f.fromId === from && f.toId === to))].slice(
+      0,
+      6,
+    );
+    this.favorites.set(next);
+    localStorage.setItem(LS_FAV, JSON.stringify(next));
+  }
+
+  useFavorite(f: Favorite): void {
+    this.knownNames.set(f.fromId, f.fromName);
+    this.knownNames.set(f.toId, f.toName);
+    this.selectFrom({ id: f.fromId, name: f.fromName, lat: null, lon: null });
+    this.selectTo({ id: f.toId, name: f.toName, lat: null, lon: null });
+    this.loadNext();
+  }
+
+  formatTime(iso: string): string {
+    try {
+      return new Date(iso).toLocaleTimeString(this.lang(), { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return iso;
+    }
+  }
+
+  delayLabel(d: Departure): string {
+    if (d.delay_seconds == null) return d.realtime ? '±?' : 'timetable';
+    const m = Math.round(d.delay_seconds / 60);
+    if (Math.abs(m) <= 1) return 'OK';
+    return m > 0 ? `+${m} min` : `${m} min`;
+  }
+
+  async share(): Promise<void> {
+    const from = this.fromId() ? this.stationName(this.fromId()) : '';
+    const to = this.toId() ? this.stationName(this.toId()) : '';
+    const text =
+      from && to
+        ? this.msg('shareTextTrip', { from, to })
+        : this.msg('shareText');
+    const result = await shareWithFriend({
+      title: this.msg('shareTitle'),
+      text,
+    });
+    if (result === 'copied') {
+      this.shareStatus.set(this.msg('shareCopied'));
+      window.setTimeout(() => this.shareStatus.set(null), 4000);
+    } else {
+      this.shareStatus.set(null);
+    }
+  }
+
+  private searchStations(query: string, side: 'from' | 'to'): void {
+    const q = query.trim();
+    if (q.length < 2) {
+      const hits = QUICK;
+      if (side === 'from') this.fromHits.set(hits);
+      else this.toHits.set(hits);
+      return;
+    }
+    this.http
+      .get<{ stations: Station[] }>(`${environment.apiBase}/stations`, {
+        params: { q, limit: 12 },
+      })
+      .subscribe({
+        next: (res) => {
+          const hits = res.stations || [];
+          for (const s of hits) this.knownNames.set(s.id, s.name);
+          if (side === 'from') this.fromHits.set(hits);
+          else this.toHits.set(hits);
+        },
+        error: () => {
+          if (side === 'from') this.fromHits.set([]);
+          else this.toHits.set([]);
+        },
+      });
+  }
+
+  private resolveName(id: string, side: 'from' | 'to'): void {
+    if (this.knownNames.has(id) && !/^\d+$/.test(this.knownNames.get(id)!)) {
+      if (side === 'from') this.fromQuery = this.knownNames.get(id)!;
+      else this.toQuery = this.knownNames.get(id)!;
+      return;
+    }
+    this.http
+      .get<{ stations: Station[] }>(`${environment.apiBase}/stations`, {
+        params: { q: id, limit: 5 },
+      })
+      .subscribe({
+        next: (res) => {
+          const hit = (res.stations || []).find((s) => s.id === id);
+          if (!hit) return;
+          this.knownNames.set(hit.id, hit.name);
+          if (side === 'from') this.fromQuery = hit.name;
+          else this.toQuery = hit.name;
+        },
+      });
+  }
+
+  private readFavorites(): Favorite[] {
+    try {
+      return JSON.parse(localStorage.getItem(LS_FAV) || '[]') as Favorite[];
+    } catch {
+      return [];
+    }
+  }
+}

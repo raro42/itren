@@ -1,0 +1,63 @@
+<a class="skip-link" href="#main">{{ msg('skip') }}</a>
+
+<header class="top" role="banner">
+  <div class="brand-block">
+    <a routerLink="/" class="brand-link" data-testid="brand">
+      <p class="brand">{{ msg('brand') }}</p>
+    </a>
+    <h1>{{ msg('tagline') }}</h1>
+  </div>
+  <div class="header-tools">
+    <nav class="nav" aria-label="Main">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" data-testid="nav-home">
+        {{ msg('navHome') }}
+      </a>
+      <a routerLink="/feedback" routerLinkActive="active" data-testid="nav-feedback">
+        {{ msg('navFeedbackShort') }}
+      </a>
+      <button type="button" class="nav-btn" (click)="share()" data-testid="nav-share">
+        {{ msg('shareShort') }}
+      </button>
+    </nav>
+    <div class="lang" role="group" [attr.aria-label]="msg('lang')">
+      <button type="button" [class.active]="lang() === 'ca'" (click)="setLang('ca')" data-testid="lang-ca">CA</button>
+      <button type="button" [class.active]="lang() === 'es'" (click)="setLang('es')" data-testid="lang-es">ES</button>
+      <button type="button" [class.active]="lang() === 'en'" (click)="setLang('en')" data-testid="lang-en">EN</button>
+    </div>
+    @if (shareStatus()) {
+      <p class="share-status" role="status">{{ shareStatus() }}</p>
+    }
+  </div>
+</header>
+
+<div class="scroll">
+  <main id="main" class="main">
+    <router-outlet />
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <nav class="footer-nav" aria-label="Footer">
+      <button type="button" class="footer-item" (click)="share()" data-testid="footer-share">
+        {{ msg('shareShort') }}
+      </button>
+      <span class="dot" aria-hidden="true">·</span>
+      <a routerLink="/feedback" class="footer-item" data-testid="footer-feedback">{{ msg('navFeedbackShort') }}</a>
+      <span class="dot" aria-hidden="true">·</span>
+      <a
+        class="footer-item github"
+        [href]="githubUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        [attr.aria-label]="msg('footerGithub')"
+        data-testid="landing-github"
+      >
+        <img src="/icons/github.svg" width="14" height="14" alt="" aria-hidden="true" />
+        <span>GitHub</span>
+      </a>
+    </nav>
+    <div class="version-bar" data-testid="landing-version">
+      <span class="meta">{{ version }} <span class="commit">{{ commitHash }}</span></span>
+    </div>
+    <p class="attr">{{ msg('attribution') }}</p>
+  </footer>
+</div>

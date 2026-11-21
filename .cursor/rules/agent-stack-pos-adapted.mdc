@@ -8,7 +8,7 @@ alwaysApply: true
 Keep yonose thinner than POS. Copy patterns, not the whole POS surface.
 
 1. Prefer removing or simplifying over adding.
-2. Front: Angular when the app lands. `npm ci --ignore-scripts` only (no `npm install`). Pin deps.
+2. Front: Angular when the app lands. `npm ci --ignore-scripts` only (no `npm install`). Exact pins only (see `pin-dependencies.mdc`).
 3. Run installs and tests inside containers when the compose stack exists. Do not install new host packages.
 4. After front changes: check front container / build logs for TS/Angular errors before saying done.
 5. Smoke: curl health + a small Puppeteer or keyboard a11y check when those scripts exist.

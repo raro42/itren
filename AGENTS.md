@@ -29,6 +29,10 @@ Station boards that go blank or lie (Rodalies / Maresme stories) are the failure
 | Deploy | Public site `yonose.zeitfenster.de` (ops host is private; see local notes, not git). SSL/HAProxy: other bot |
 | Money | Free for now |
 | Stack rules | Slim POS habits: see `.cursor/rules/` (`agent-stack-pos-adapted`, `ui-human-agent-a11y`, `ui-contrast`) |
+| Front | Angular **22.3.0** exact pins (no `^`/`~`). See `front/package.json` |
+| Deps | Pin everything exactly (npm `package.json` + lockfile, pip `==` + `requirements.lock`). No `^`/`~`. |
+| Security | Rate limit API, tight CORS, security headers, read-only public methods, no SSRF. See `api-security.mdc` |
+| Local-only UI | No CDN fonts/scripts. Open Sans vendored in `front/public/fonts/`. CSP `self` only. See `no-cdn-assets.mdc` |
 
 ## Autopilot / human contact
 
@@ -70,3 +74,4 @@ Server-side `cursor-agent` may exist on the deploy host; prefer it for ops jobs,
 3. GitHub comments only via `./scripts/gh-safe.sh`.
 4. Do not close issues in coder/tester steps (004 + loop close).
 5. Commit and push coherent verified work on `main`.
+6. **Never deploy an untracked or uncommitted tree.** Commit (and push) first, then deploy from that revision. No rsync of dirty workspaces to production.

@@ -1,0 +1,32 @@
+<article class="feedback" data-testid="feedback-page">
+  <h2>{{ msg('feedbackTitle') }}</h2>
+  <p>{{ msg('feedbackLead') }}</p>
+  <p>{{ msg('feedbackHow') }}</p>
+
+  <div class="feedback-actions">
+    <a
+      class="primary"
+      [href]="newIssueUrl"
+      target="_blank"
+      rel="noopener noreferrer"
+      data-testid="feedback-new-issue"
+    >
+      {{ msg('feedbackNewIssue') }}
+    </a>
+    <a
+      class="ghost"
+      [href]="issuesUrl"
+      target="_blank"
+      rel="noopener noreferrer"
+      data-testid="feedback-all-issues"
+    >
+      {{ msg('feedbackBrowseIssues') }}
+    </a>
+  </div>
+
+  <p class="note">{{ msg('feedbackNote') }}</p>
+
+  <p>
+    <a routerLink="/" data-testid="feedback-back">{{ msg('feedbackBack') }}</a>
+  </p>
+</article>

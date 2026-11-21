@@ -1,0 +1,27 @@
+---
+description: API security baseline for yonose (rate limit, headers, CORS)
+globs: api/**
+alwaysApply: true
+---
+
+# API security
+
+We care. Public API on the internet must be hardened before calling a demo "done".
+
+## Required baseline
+
+1. **Rate limiting** on `/api/*` (per IP). Sensible defaults for read-only traffic; stricter on expensive routes (`/next`, GTFS refresh). Return `429` with `Retry-After`.
+2. **CORS** allowlist (public site origin + local dev), not `*`, once public.
+3. **Security headers** via app or nginx: `X-Content-Type-Options nosniff`, `Referrer-Policy`, `Content-Security-Policy` on the front, `Permissions-Policy` tight.
+4. **Methods**: read-only public API (GET). Reject unused methods.
+5. **Input bounds**: query length limits, `limit` caps already; validate station ids.
+6. **No secrets in responses**. No stack traces to clients in production.
+7. **Dependency pins** (see `pin-dependencies.mdc`).
+8. **Outbound**: fixed User-Agent to Renfe; timeouts; do not open SSRF via user-supplied URLs.
+9. **Health** may be unauthenticated but should not leak infra paths or internal hosts.
+
+## Do not
+
+- Ship with `allow_origins=["*"]` on production without an explicit temporary note.
+- Add auth complexity for MVP unless needed; rate limit first.
+- Log full client payloads with PII.

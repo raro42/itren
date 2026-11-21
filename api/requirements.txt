@@ -1,0 +1,8 @@
+# Direct dependencies (exact pins).
+# Production/Docker installs from requirements.lock (full transitive freeze).
+# Regenerate lock: docker run --rm -v "$PWD":/app -w /app python:3.12.8-slim-bookworm
+#   bash -lc 'pip install -r requirements.txt && pip freeze > requirements.lock'
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+httpx==0.28.1
+pydantic==2.10.4
