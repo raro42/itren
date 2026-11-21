@@ -104,20 +104,3 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
 }
-
-/* Outside the phone column: quiet rail, not a wide marketing page */
-@media (min-width: 28rem) {
-  body {
-    background:
-      linear-gradient(180deg, rgba(3, 32, 71, 0.04), transparent 40%),
-      var(--color-bg-muted);
-  }
-}
-
-@media (min-width: 28rem) and (prefers-color-scheme: dark) {
-  body {
-    background:
-      linear-gradient(180deg, rgba(241, 22, 47, 0.08), transparent 40%),
-      var(--color-bg);
-  }
-}
