@@ -313,7 +313,7 @@ step_003_tester() {
     ./scripts/gh-safe.sh issue comment "$issue_n" --body "Agent 003: testing (\`$(basename "$task")\`)." 2>/dev/null || true
   fi
   run_cursor "003" \
-    "Follow agents/testing/TESTER.md. Test the GitHub TESTING- task under agents/testing/active/. On pass: move to agents/tasks/CLOSED-N-…. On fail: back to agents/tasks/WIP-N-… with a test report. Do not close the GitHub issue. Do not paste secrets."
+    "Follow agents/testing/TESTER.md. Test the GitHub TESTING- task under agents/testing/active/. Always run the Quality pass (change review, public smoke, gzip/perf, SEO/agentic) and append a Test report. On pass: move to agents/tasks/CLOSED-N-…. On fail: back to agents/tasks/WIP-N-… with the report. Do not close the GitHub issue. Do not paste secrets."
 }
 
 step_004_handoff() {

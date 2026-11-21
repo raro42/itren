@@ -1,6 +1,6 @@
 # agents/
 
-Thin agent loop for **yonose** (pattern from [agents-explained](https://github.com/raro42/agents-explained) / mac-stats).
+Thin agent loop for **itren** (pattern from [agents-explained](https://github.com/raro42/agents-explained) / mac-stats).
 
 Shell orchestrator. Markdown roles. Task files are the queue. Cursor is a worker.
 
@@ -8,7 +8,7 @@ Shell orchestrator. Markdown roles. Task files are the queue. Cursor is a worker
 |------|------|--------|
 | 001 | Issue pickup | [001-issue-reviewer.md](001-issue-reviewer.md) · `issue_checker.py` |
 | 002 | Coder | [006-feature-coder/FEATURE-CODER.md](006-feature-coder/FEATURE-CODER.md) |
-| 003 | Tester | [testing/TESTER.md](testing/TESTER.md) |
+| 003 | Tester | [testing/TESTER.md](testing/TESTER.md) (task tests + **quality pass**: review, smoke, perf, SEO/agentic) |
 | 004 | Close | [004-closing-reviewer/CLOSING-REVIEWER-PROMPT.md](004-closing-reviewer/CLOSING-REVIEWER-PROMPT.md) |
 
 ```bash
