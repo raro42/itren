@@ -17,7 +17,7 @@ import httpx
 
 from . import config
 
-log = logging.getLogger("yonose.gtfs")
+log = logging.getLogger("itren.gtfs")
 TZ = ZoneInfo("Europe/Madrid")
 
 
@@ -59,6 +59,9 @@ class GtfsStore:
         self.trip_service: dict[str, str] = {}
         self.loaded_at: float | None = None
         self.gtfs_last_modified: str | None = None
+        self._alerts_cache: list[dict[str, str]] = []
+        self._alerts_fetched_at: float = 0.0
+        self._rt_ok_at: float = 0.0
 
     def ensure_loaded(self) -> None:
         with self._lock:
@@ -269,9 +272,55 @@ class GtfsStore:
         results.sort(key=lambda d: d.scheduled_departure)
         results = results[: max(limit * 3, 12)]
         self._apply_realtime(results)
-        results = [d for d in results if not d.cancelled]
-        results.sort(key=lambda d: d.scheduled_departure + timedelta(seconds=d.delay_seconds or 0))
+        # Keep cancelled visible (honesty); sort effective time, cancelled last among ties
+        results.sort(
+            key=lambda d: (
+                1 if d.cancelled else 0,
+                d.scheduled_departure + timedelta(seconds=d.delay_seconds or 0),
+            )
+        )
         return results[:limit]
+
+    def live_feed_ok(self) -> bool:
+        return bool(self._rt_ok_at) and (time.time() - self._rt_ok_at) < 300
+
+    def active_alerts(self, limit: int = 5) -> list[dict[str, str]]:
+        self._refresh_alerts()
+        return list(self._alerts_cache[:limit])
+
+    def _refresh_alerts(self) -> None:
+        if self._alerts_fetched_at and (time.time() - self._alerts_fetched_at) < 120:
+            return
+        headers = {"User-Agent": config.USER_AGENT, "Accept": "application/json"}
+        try:
+            with httpx.Client(timeout=min(15.0, config.HTTP_TIMEOUT), follow_redirects=True, headers=headers) as client:
+                r = client.get(config.ALERTS_URL)
+                if r.status_code != 200:
+                    self._alerts_fetched_at = time.time()
+                    return
+                ctype = (r.headers.get("content-type") or "").lower()
+                if "json" not in ctype and not r.text.lstrip().startswith("{"):
+                    self._alerts_fetched_at = time.time()
+                    return
+                data = r.json()
+        except Exception as e:
+            log.warning("alerts fetch failed: %s", e)
+            self._alerts_fetched_at = time.time()
+            return
+
+        out: list[dict[str, str]] = []
+        for ent in data.get("entity") or data.get("entities") or []:
+            alert = ent.get("alert") or {}
+            header = _alert_text(alert.get("headerText") or alert.get("header_text"))
+            desc = _alert_text(alert.get("descriptionText") or alert.get("description_text"))
+            text = header or desc
+            if not text:
+                continue
+            out.append({"header": header or text[:120], "description": desc})
+            if len(out) >= 8:
+                break
+        self._alerts_cache = out
+        self._alerts_fetched_at = time.time()
 
     def _expand_stop_ids(self, stop_id: str) -> set[str]:
         base = self.stations.get(stop_id)
@@ -304,6 +353,7 @@ class GtfsStore:
             log.warning("trip_updates fetch failed: %s", e)
             return
 
+        self._rt_ok_at = time.time()
         by_trip: dict[str, Any] = {}
         for ent in data.get("entity") or data.get("entities") or []:
             tu = ent.get("tripUpdate") or ent.get("trip_update") or {}
@@ -339,6 +389,19 @@ class GtfsStore:
                     delay = int(stu["arrival"]["delay"])
             if delay is not None:
                 d.delay_seconds = delay
+
+
+def _alert_text(block: Any) -> str:
+    if not block:
+        return ""
+    if isinstance(block, str):
+        return block.strip()
+    translations = block.get("translation") or block.get("translations") or []
+    for t in translations:
+        text = (t.get("text") or "").strip()
+        if text:
+            return text
+    return ""
 
 
 def _f(v: str | None) -> float | None:

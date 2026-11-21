@@ -7,29 +7,48 @@ from zoneinfo import ZoneInfo
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
 
-from . import config
+from . import config, metrics
 from .gtfs import STORE
 from .security import RateLimitMiddleware, SecurityHeadersMiddleware, cors_origins
 
 logging.basicConfig(level=logging.INFO)
-log = logging.getLogger("yonose.api")
+log = logging.getLogger("itren.api")
 TZ = ZoneInfo("Europe/Madrid")
 
-app = FastAPI(title="yonose", version=config.VERSION, docs_url=None, redoc_url=None, openapi_url=None)
+app = FastAPI(title="itren", version=config.VERSION, docs_url=None, redoc_url=None, openapi_url=None)
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RateLimitMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins(),
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
 
+class VisitBody(BaseModel):
+    visitor_id: str = Field(..., min_length=8, max_length=128)
+
+
+class VoteBody(BaseModel):
+    visitor_id: str = Field(..., min_length=8, max_length=128)
+    vote: str = Field(..., pattern="^(like|dislike)$")
+
+
+class ReportBody(BaseModel):
+    visitor_id: str = Field(..., min_length=8, max_length=128)
+    from_id: str = Field(..., min_length=1, max_length=32)
+    to_id: str = Field(..., min_length=1, max_length=32)
+    trip_id: str = Field(..., min_length=1, max_length=64)
+    scheduled: str = Field(..., min_length=1, max_length=64)
+    kind: str = Field(..., pattern="^(on_time|late|no_show|board_wrong)$")
+
+
 @app.on_event("startup")
 def _startup() -> None:
-    # Load in a daemon thread so /health answers while GTFS parses.
+    metrics.init()
     import threading
 
     def _load() -> None:
@@ -46,7 +65,7 @@ def _startup() -> None:
 def health() -> dict[str, Any]:
     return {
         "ok": True,
-        "service": "yonose-api",
+        "service": "itren-api",
         "version": config.VERSION,
         "commit": config.COMMIT,
         "gtfs_loaded": bool(STORE.stations),
@@ -54,6 +73,37 @@ def health() -> dict[str, Any]:
         "gtfs_last_modified": STORE.gtfs_last_modified,
         "attribution": "Origen de los datos: Renfe Operadora (CC BY 4.0)",
     }
+
+
+@app.get("/stats")
+@app.get("/api/stats")
+def stats() -> dict[str, Any]:
+    return metrics.public_stats()
+
+
+@app.post("/visit")
+@app.post("/api/visit")
+def visit(body: VisitBody) -> dict[str, Any]:
+    return metrics.record_visit(body.visitor_id)
+
+
+@app.post("/vote")
+@app.post("/api/vote")
+def vote(body: VoteBody) -> dict[str, Any]:
+    return metrics.set_vote(body.visitor_id, body.vote)
+
+
+@app.post("/report")
+@app.post("/api/report")
+def report(body: ReportBody) -> dict[str, Any]:
+    return metrics.add_trip_report(
+        body.visitor_id,
+        from_id=body.from_id,
+        to_id=body.to_id,
+        trip_id=body.trip_id,
+        scheduled=body.scheduled,
+        kind=body.kind,
+    )
 
 
 @app.get("/stations")
@@ -100,12 +150,20 @@ def next_trains(
     deps = STORE.next_departures(from_st.id, to_st.id, limit=limit)
     now = datetime.now(TZ)
     board = []
+    any_rt = False
     for d in deps:
+        if d.realtime:
+            any_rt = True
         delay = d.delay_seconds
         effective = d.scheduled_departure + timedelta(seconds=delay or 0)
         wait_min = max(0, int((effective - now).total_seconds() // 60))
-        situation = _situation(wait_min, delay, d.realtime)
-        leave = wait_min >= 45 or (delay is not None and delay >= 20 * 60 and wait_min >= 25)
+        situation = _situation(wait_min, delay, d.realtime, d.cancelled)
+        leave = (not d.cancelled) and (
+            wait_min >= 45 or (delay is not None and delay >= 20 * 60 and wait_min >= 25)
+        )
+        delay_source = "live" if d.realtime and delay is not None else (
+            "timetable" if not d.realtime else "unknown"
+        )
         board.append(
             {
                 "trip_id": d.trip_id,
@@ -114,11 +172,23 @@ def next_trains(
                 "scheduled": d.scheduled_departure.isoformat(),
                 "delay_seconds": delay,
                 "realtime": d.realtime,
+                "cancelled": d.cancelled,
+                "delay_source": delay_source,
                 "wait_minutes": wait_min,
                 "situation": situation,
                 "suggest_leave": leave,
             }
         )
+
+    feed_ok = STORE.live_feed_ok()
+    if not deps:
+        live_mode = "unknown"
+    elif any_rt:
+        live_mode = "live"
+    elif feed_ok:
+        live_mode = "timetable"  # feed up, no match for these trips
+    else:
+        live_mode = "timetable_only"
 
     taxi = None
     if from_st.lat is not None and from_st.lon is not None:
@@ -130,10 +200,15 @@ def next_trains(
             "label": from_st.name,
         }
 
+    alerts = STORE.active_alerts(limit=4)
+
     return {
         "from": {"id": from_st.id, "name": from_st.name, "lat": from_st.lat, "lon": from_st.lon},
         "to": {"id": to_st.id, "name": to_st.name, "lat": to_st.lat, "lon": to_st.lon},
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "live_mode": live_mode,
+        "live_feed_ok": feed_ok,
+        "alerts": alerts,
         "departures": board,
         "taxi": taxi,
         "attribution": "Origen de los datos: Renfe Operadora (CC BY 4.0)",
@@ -141,7 +216,9 @@ def next_trains(
     }
 
 
-def _situation(wait_min: int, delay_seconds: int | None, realtime: bool) -> str:
+def _situation(wait_min: int, delay_seconds: int | None, realtime: bool, cancelled: bool) -> str:
+    if cancelled:
+        return "Cancelled according to live feed. Do not wait for this one."
     if delay_seconds is None:
         base = f"Next in about {wait_min} min (timetable"
         base += ", live delay not confirmed)" if not realtime else ")"

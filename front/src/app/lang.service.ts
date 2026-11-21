@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { Lang, MsgKey, detectLang, t } from './i18n';
 
-const LS_LANG = 'yonose.lang';
+const LS_LANG = 'itren.lang';
 
 @Injectable({ providedIn: 'root' })
 export class LangService {

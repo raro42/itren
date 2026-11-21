@@ -25,6 +25,10 @@ _ALLOWED_ORIGINS = [
 ]
 
 
+def is_metric_write_path(path: str) -> bool:
+    return path.rstrip("/").endswith(("/visit", "/vote", "/report", "/api/visit", "/api/vote", "/api/report"))
+
+
 def cors_origins() -> list[str]:
     return list(_ALLOWED_ORIGINS)
 
@@ -41,6 +45,11 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         if path.endswith("/health") or path.endswith("/api/health"):
             return await call_next(request)
 
+        # Tighter cap for write endpoints (vote / visit / report)
+        limit = self.limit
+        if request.method == "POST" and is_metric_write_path(path):
+            limit = min(self.limit, 30)
+
         ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() or (
             request.client.host if request.client else "unknown"
         )
@@ -48,14 +57,24 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         q = self._hits[ip]
         while q and now - q[0] > self.window:
             q.popleft()
-        if len(q) >= self.limit:
+        if len(q) >= limit:
             return JSONResponse(
                 {"detail": "Rate limit exceeded"},
                 status_code=429,
                 headers={"Retry-After": str(self.window)},
             )
         q.append(now)
-        return await call_next(request)
+
+        response = await call_next(request)
+        # Count real API traffic (skip pure stats polling noise lightly: still count)
+        if request.method in ("GET", "POST") and not path.endswith(("/health", "/api/health")):
+            try:
+                from . import metrics
+
+                metrics.bump_request()
+            except Exception:
+                pass
+        return response
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):

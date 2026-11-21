@@ -36,6 +36,41 @@
   </main>
 
   <footer class="footer" role="contentinfo">
+    <section class="pulse" aria-labelledby="like-heading" data-testid="app-pulse">
+      <h2 id="like-heading" class="pulse-title">{{ msg('likeAsk') }}</h2>
+      <div class="pulse-actions">
+        <button
+          type="button"
+          class="vote"
+          [class.active]="myVote() === 'like'"
+          (click)="vote('like')"
+          data-testid="vote-like"
+        >{{ msg('likeYes') }}</button>
+        <button
+          type="button"
+          class="vote"
+          [class.active]="myVote() === 'dislike'"
+          (click)="vote('dislike')"
+          data-testid="vote-dislike"
+        >{{ msg('likeNo') }}</button>
+      </div>
+      @if (stats(); as s) {
+        <p class="pulse-stats" data-testid="like-stats">
+          {{ msg('likeStats', { likes: s.likes, dislikes: s.dislikes }) }}
+        </p>
+        <p class="pulse-usage" data-testid="usage-stats">
+          {{ msg('usageLine', {
+            visitors: s.visitors_today,
+            returning: s.returning_today,
+            requests: s.requests_today
+          }) }}
+        </p>
+      }
+      @if (voteThanks()) {
+        <p class="share-status" role="status">{{ msg('likeThanks') }}</p>
+      }
+    </section>
+
     <nav class="footer-nav" aria-label="Footer">
       <button type="button" class="footer-item" (click)="share()" data-testid="footer-share">
         {{ msg('shareShort') }}

@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../environments/environment';
 import { LangService } from './lang.service';
 import { MsgKey } from './i18n';
 import { shareWithFriend } from './share';
+import { getVisitorId } from './visitor';
 
 type Station = { id: string; name: string; lat: number | null; lon: number | null };
 type Departure = {
@@ -16,10 +17,13 @@ type Departure = {
   scheduled: string;
   delay_seconds: number | null;
   realtime: boolean;
+  cancelled?: boolean;
+  delay_source?: 'live' | 'timetable' | 'unknown';
   wait_minutes: number;
   situation: string;
   suggest_leave: boolean;
 };
+type AlertItem = { header: string; description: string };
 type NextResponse = {
   from: Station;
   to: Station;
@@ -27,12 +31,16 @@ type NextResponse = {
   taxi: { maps: string; label: string } | null;
   attribution: string;
   empty_reason: string | null;
+  live_mode?: 'live' | 'timetable' | 'timetable_only' | 'unknown';
+  live_feed_ok?: boolean;
+  alerts?: AlertItem[];
 };
 type Favorite = { fromId: string; toId: string; fromName: string; toName: string };
+type ReportKind = 'on_time' | 'late' | 'no_show' | 'board_wrong';
 
-const LS_FROM = 'yonose.from';
-const LS_TO = 'yonose.to';
-const LS_FAV = 'yonose.favorites';
+const LS_FROM = 'itren.from';
+const LS_TO = 'itren.to';
+const LS_FAV = 'itren.favorites';
 
 /** Maresme sample OD: always available even before search. */
 const QUICK: Station[] = [
@@ -56,10 +64,22 @@ function bestStation(query: string, hits: Station[]): Station | undefined {
   if (exact) return exact;
   const starts = hits.filter((s) => fold(s.name).startsWith(q) || fold(s.name).includes(q));
   if (starts.length === 1) return starts[0];
-  // "masnou" → "El Masnou"
   const loose = hits.filter((s) => fold(s.name).includes(q) || q.includes(fold(s.name)));
   if (loose.length === 1) return loose[0];
   return undefined;
+}
+
+function migrateLs(): void {
+  const pairs: [string, string][] = [
+    ['yonose.from', LS_FROM],
+    ['yonose.to', LS_TO],
+    ['yonose.favorites', LS_FAV],
+  ];
+  for (const [oldK, newK] of pairs) {
+    if (!localStorage.getItem(newK) && localStorage.getItem(oldK)) {
+      localStorage.setItem(newK, localStorage.getItem(oldK)!);
+    }
+  }
 }
 
 @Component({
@@ -83,7 +103,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   result = signal<NextResponse | null>(null);
   favorites = signal<Favorite[]>([]);
   shareStatus = signal<string | null>(null);
+  selected = signal<Departure | null>(null);
+  reportStatus = signal<string | null>(null);
+  reportAgg = signal<Record<string, number> | null>(null);
   knownNames = new Map<string, string>();
+  readonly githubStarUrl = environment.githubUrl;
 
   private fromTimer: ReturnType<typeof setTimeout> | null = null;
   private toTimer: ReturnType<typeof setTimeout> | null = null;
@@ -99,6 +123,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    migrateLs();
     this.favorites.set(this.readFavorites());
     const from = localStorage.getItem(LS_FROM) || '';
     const to = localStorage.getItem(LS_TO) || '';
@@ -122,6 +147,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (this.toBlurTimer) clearTimeout(this.toBlurTimer);
   }
 
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.selected()) this.closeDetail();
+  }
+
   msg(key: MsgKey, vars?: Record<string, string | number>): string {
     return this.langSvc.msg(key, vars);
   }
@@ -130,7 +160,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     return this.langSvc.lang();
   }
 
-  /** Enable Show when both sides have an id or enough typed text to resolve. */
   canShow(): boolean {
     if (this.loading()) return false;
     if (this.fromId() && this.toId()) return true;
@@ -224,6 +253,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   async loadNext(): Promise<void> {
     this.error.set(null);
+    this.closeDetail();
     const from = await this.ensureStation('from');
     const to = await this.ensureStation('to');
     if (!from || !to) {
@@ -245,6 +275,56 @@ export class HomeComponent implements OnInit, OnDestroy {
         error: () => {
           this.loading.set(false);
           this.error.set(this.msg('error'));
+        },
+      });
+  }
+
+  openDetail(d: Departure): void {
+    this.selected.set(d);
+    this.reportStatus.set(null);
+    this.reportAgg.set(null);
+  }
+
+  closeDetail(): void {
+    this.selected.set(null);
+    this.reportStatus.set(null);
+    this.reportAgg.set(null);
+  }
+
+  sourceLabel(d: Departure): string {
+    const src = d.delay_source || (d.realtime ? 'unknown' : 'timetable');
+    if (src === 'live') return this.msg('detailSourceLive');
+    if (src === 'timetable') return this.msg('detailSourceTimetable');
+    return this.msg('detailSourceUnknown');
+  }
+
+  liveBannerKey(): MsgKey {
+    const mode = this.result()?.live_mode;
+    if (mode === 'live') return 'liveBannerLive';
+    if (mode === 'timetable' || mode === 'timetable_only') return 'liveBannerTimetable';
+    return 'liveBannerUnknown';
+  }
+
+  sendReport(kind: ReportKind): void {
+    const d = this.selected();
+    const res = this.result();
+    if (!d || !res) return;
+    this.http
+      .post<{ ok: boolean; aggregates?: Record<string, number> }>(`${environment.apiBase}/report`, {
+        visitor_id: getVisitorId(),
+        from_id: res.from.id,
+        to_id: res.to.id,
+        trip_id: d.trip_id,
+        scheduled: d.scheduled,
+        kind,
+      })
+      .subscribe({
+        next: (r) => {
+          this.reportStatus.set(this.msg('reportThanks'));
+          if (r.aggregates) this.reportAgg.set(r.aggregates);
+        },
+        error: () => {
+          this.reportStatus.set(this.msg('error'));
         },
       });
   }
@@ -284,6 +364,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   delayLabel(d: Departure): string {
+    if (d.cancelled) return this.msg('cancelled');
     if (d.delay_seconds == null) return d.realtime ? '±?' : 'timetable';
     const m = Math.round(d.delay_seconds / 60);
     if (Math.abs(m) <= 1) return 'OK';
@@ -368,8 +449,6 @@ export class HomeComponent implements OnInit, OnDestroy {
           for (const s of hits) this.knownNames.set(s.id, s.name);
           if (side === 'from') this.fromHits.set(hits);
           else this.toHits.set(hits);
-          // Auto-lock when the typed text uniquely identifies a station
-          // ("El masnou", "masnou", accents). Avoids disabled Show on phones.
           const best = bestStation(q, hits);
           const exact = best && fold(best.name) === fold(q);
           const unique = best && hits.length === 1 && fold(q).length >= 3;

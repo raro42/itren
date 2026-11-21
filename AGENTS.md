@@ -1,4 +1,4 @@
-# AGENTS - yonose
+# AGENTS - itren (repo: yonose)
 
 Thin agent loop. Shell orchestrator + markdown roles. Cursor is a worker.
 
@@ -6,8 +6,11 @@ See [agents-explained](https://github.com/raro42/agents-explained) and `agents/R
 
 ## Mission
 
+Public product name: **itren**. Repo and current public DNS may still say yonose until renamed.
+
 Public train transport truth for waiting humans: next real arrival, honest delay, situation in plain language, and when to stop waiting (e.g. taxi).
 Station boards that go blank or lie (Rodalies / Maresme stories) are the failure mode we fix.
+Private project by Ralf Roeber (not a company product).
 
 **Not** another Spain-wide train map (valfiguer / movilidad-bcn already exist).
 **Not** an App Store app. Web only (Angular), PWA later if needed.
@@ -26,7 +29,8 @@ Station boards that go blank or lie (Rodalies / Maresme stories) are the failure
 | Habit | Browser `localStorage` for last trip, favorites, language |
 | Footer | GitHub repo link + semver + short commit hash on every public page |
 | Answers | Real data (Renfe GTFS + GTFS-RT + alerts); AI to explain situation + related news |
-| Deploy | Public site `yonose.zeitfenster.de` (ops host is private; see local notes, not git). SSL/HAProxy: other bot |
+| Brand name | **itren** (UI, title, share text). GitHub repo may stay `raro42/yonose` until renamed. |
+| Deploy | Public site `yonose.zeitfenster.de` until DNS cutover (ops host is private; see local notes, not git). SSL/HAProxy: other bot |
 | Money | Free for now |
 | Stack rules | Slim POS habits: see `.cursor/rules/` (`agent-stack-pos-adapted`, `ui-human-agent-a11y`, `ui-contrast`) |
 | Front | Angular **22.3.0** exact pins (no `^`/`~`). See `front/package.json` |

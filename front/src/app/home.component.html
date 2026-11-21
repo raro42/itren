@@ -147,23 +147,58 @@
           {{ res.from.name }} → {{ res.to.name }}
         </h2>
 
+        <p
+          class="live-banner"
+          [class.warn]="res.live_mode !== 'live'"
+          data-testid="live-banner"
+          role="status"
+        >
+          {{ msg(liveBannerKey()) }}
+        </p>
+
+        @if (res.alerts?.length) {
+          <div class="alerts" data-testid="alerts">
+            <h3>{{ msg('alertsTitle') }}</h3>
+            <ul>
+              @for (a of res.alerts; track a.header) {
+                <li>
+                  <strong>{{ a.header }}</strong>
+                  @if (a.description && a.description !== a.header) {
+                    <span>{{ a.description }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          </div>
+        }
+
+        <p class="tap-hint">{{ msg('tapHint') }}</p>
+
         @if (!res.departures.length) {
           <p>{{ msg('empty') }}</p>
         } @else {
           <ol class="deps">
-            @for (d of res.departures; track d.trip_id) {
-              <li [class.leave]="d.suggest_leave">
-                <div class="line-row">
-                  <span class="line">{{ d.line }}</span>
-                  <time [attr.datetime]="d.scheduled">{{ formatTime(d.scheduled) }}</time>
-                  <span class="delay" [attr.aria-label]="delayLabel(d)">{{ delayLabel(d) }}</span>
-                </div>
-                <p class="head">{{ d.headsign }}</p>
-                <p class="sit">{{ d.situation }}</p>
-                <p class="wait">{{ msg('wait', { m: d.wait_minutes }) }}</p>
-                @if (d.suggest_leave) {
-                  <p class="leave-flag">{{ msg('leave') }}</p>
-                }
+            @for (d of res.departures; track d.trip_id + d.scheduled) {
+              <li [class.leave]="d.suggest_leave" [class.cancelled]="d.cancelled">
+                <button
+                  type="button"
+                  class="dep-btn"
+                  (click)="openDetail(d)"
+                  (keydown.enter)="openDetail(d)"
+                  data-testid="dep-row"
+                >
+                  <div class="line-row">
+                    <span class="line">{{ d.line }}</span>
+                    <time [attr.datetime]="d.scheduled">{{ formatTime(d.scheduled) }}</time>
+                    <span class="delay" [attr.aria-label]="delayLabel(d)">{{ delayLabel(d) }}</span>
+                  </div>
+                  <p class="head">{{ d.headsign }}</p>
+                  <p class="sit">{{ d.situation }}</p>
+                  <p class="wait">{{ msg('wait', { m: d.wait_minutes }) }}</p>
+                  @if (d.suggest_leave) {
+                    <p class="leave-flag">{{ msg('leave') }}</p>
+                  }
+                </button>
               </li>
             }
           </ol>
@@ -186,6 +221,25 @@
       </section>
     }
 
+    <section class="about" aria-labelledby="about-heading" data-testid="about">
+      <h2 id="about-heading">{{ msg('aboutTitle') }}</h2>
+      <p>{{ msg('aboutLead') }}</p>
+      <p>{{ msg('aboutStar') }}</p>
+      <p>{{ msg('aboutShare') }}</p>
+      <div class="about-actions">
+        <a
+          class="ghost"
+          [href]="githubStarUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-testid="star-github"
+        >{{ msg('starGithub') }}</a>
+        <button type="button" class="ghost" (click)="share()" data-testid="about-share">
+          {{ msg('shareShort') }}
+        </button>
+      </div>
+    </section>
+
     @if (result()) {
       <section class="why" aria-labelledby="why-heading-after">
         <h2 id="why-heading-after">{{ msg('whyTitle') }}</h2>
@@ -194,3 +248,70 @@
     }
   </div>
 </div>
+
+@if (selected(); as d) {
+  <div
+    class="sheet-backdrop"
+    (click)="closeDetail()"
+    data-testid="detail-backdrop"
+  ></div>
+  <div
+    class="sheet"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="msg('detailTitle')"
+    data-testid="detail-sheet"
+  >
+    <div class="sheet-head">
+      <h2>{{ msg('detailTitle') }}</h2>
+      <button type="button" class="ghost sheet-close" (click)="closeDetail()" data-testid="detail-close">
+        {{ msg('detailClose') }}
+      </button>
+    </div>
+    <div class="line-row">
+      <span class="line">{{ d.line }}</span>
+      <time [attr.datetime]="d.scheduled">{{ formatTime(d.scheduled) }}</time>
+      <span class="delay">{{ delayLabel(d) }}</span>
+    </div>
+    <p class="head">{{ d.headsign }}</p>
+    <p class="sit">{{ d.situation }}</p>
+    <p class="wait">{{ msg('wait', { m: d.wait_minutes }) }}</p>
+    @if (d.cancelled) {
+      <p class="leave-flag">{{ msg('detailCancelled') }}</p>
+    }
+    <p class="meta">{{ msg('detailSource', { source: sourceLabel(d) }) }}</p>
+    <p class="meta">{{ msg('detailTrip') }}: <code>{{ d.trip_id }}</code></p>
+    @if (d.suggest_leave) {
+      <p class="leave-flag">{{ msg('leave') }}</p>
+    }
+
+    <div class="report" data-testid="trip-report">
+      <p class="report-ask">{{ msg('reportAsk') }}</p>
+      <div class="report-actions">
+        <button type="button" class="ghost" (click)="sendReport('on_time')">{{ msg('reportOnTime') }}</button>
+        <button type="button" class="ghost" (click)="sendReport('late')">{{ msg('reportLate') }}</button>
+        <button type="button" class="ghost" (click)="sendReport('no_show')">{{ msg('reportNoShow') }}</button>
+        <button type="button" class="ghost" (click)="sendReport('board_wrong')">{{ msg('reportBoard') }}</button>
+      </div>
+      @if (reportStatus()) {
+        <p class="share-status" role="status">{{ reportStatus() }}</p>
+      }
+      @if (reportAgg(); as agg) {
+        <ul class="agg">
+          @if (agg['on_time']) {
+            <li>{{ msg('reportOnTime') }}: {{ msg('reportAgg', { n: agg['on_time'] }) }}</li>
+          }
+          @if (agg['late']) {
+            <li>{{ msg('reportLate') }}: {{ msg('reportAgg', { n: agg['late'] }) }}</li>
+          }
+          @if (agg['no_show']) {
+            <li>{{ msg('reportNoShow') }}: {{ msg('reportAgg', { n: agg['no_show'] }) }}</li>
+          }
+          @if (agg['board_wrong']) {
+            <li>{{ msg('reportBoard') }}: {{ msg('reportAgg', { n: agg['board_wrong'] }) }}</li>
+          }
+        </ul>
+      }
+    </div>
+  </div>
+}
