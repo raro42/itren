@@ -19,3 +19,4 @@ __pycache__/
 tmp/
 tmp-screens/
 *.log
+agents/tasks/demo-1h/ARCHIVED-*.md
