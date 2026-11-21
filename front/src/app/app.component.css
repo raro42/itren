@@ -304,6 +304,13 @@
   font-size: 0.85rem;
 }
 
+.attr.data-coverage {
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.4;
+}
+
 :focus-visible {
   outline: 3px solid var(--color-focus);
   outline-offset: 2px;

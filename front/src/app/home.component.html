@@ -5,6 +5,7 @@
       <p class="trip-lead" data-testid="product-lead">{{ msg('whyLead') }}</p>
 
       <p class="quick-label">{{ msg('quickLabel') }}</p>
+      <p class="data-coverage" data-testid="data-coverage">{{ msg('dataCoverage') }}</p>
       <div class="quick" role="group" [attr.aria-label]="msg('quickLabel')">
         <button
           type="button"
@@ -222,6 +223,7 @@
         }
 
         <p class="attr">{{ res.attribution || msg('attribution') }}</p>
+        <p class="attr data-coverage">{{ msg('dataCoverage') }}</p>
       </section>
     } @else {
       <section class="why why-panel" aria-labelledby="why-heading">
