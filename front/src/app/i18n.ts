@@ -70,6 +70,9 @@ const dict = {
       'Not from the App Store or Play Store. It is a website you can install on your phone: open itren in the browser → browser menu → Add to Home Screen (or Install app). You get an icon, faster open, no account. Works best on Android Chrome; on iPhone use Safari → Share → Add to Home Screen.',
     installBtn: 'Install app',
     installHint: 'Add itren to your home screen. No store, no account.',
+    faqVsQ: 'Is this like Transporta’m?',
+    faqVsA:
+      'No. Transporta’m is the map app: where trains are, platforms, many modes. itren is smaller: origin → destination, next real train, honest when live data is missing, and when to stop waiting (taxi). Same Renfe feeds possible. Different job. We do not try to be another map.',
     faqLegalQ: 'Is this official? Any disclaimer?',
     faqLegalA:
       'Unofficial. Not Renfe, not Rodalies, not a company product. Private project by Ralf Roeber. Times and delays come from Renfe’s public feeds (CC BY 4.0); the station board and reality can still disagree. Use your eyes on the platform. You decide when to wait or leave. No warranty for missed trains or bad days.',
@@ -202,6 +205,9 @@ const dict = {
       'No en App Store ni Play Store. Es una web que puedes instalar en el móvil: abre itren en el navegador → menú → Añadir a pantalla de inicio (o Instalar app). Queda un icono, abre más rápido, sin cuenta. En Android Chrome va bien; en iPhone usa Safari → Compartir → Añadir a pantalla de inicio.',
     installBtn: 'Instalar app',
     installHint: 'Añade itren a la pantalla de inicio. Sin tienda, sin cuenta.',
+    faqVsQ: '¿Es como Transporta’m?',
+    faqVsA:
+      'No. Transporta’m es la app del mapa: dónde están los trenes, andén, muchos modos. itren es más pequeño: origen → destino, próximo tren real, claro cuando falta el vivo, y cuándo dejar de esperar (taxi). Pueden usar los mismos feeds de Renfe. Trabajo distinto. No intentamos ser otro mapa.',
     faqLegalQ: '¿Es oficial? ¿Hay aviso legal?',
     faqLegalA:
       'No oficial. No es Renfe, ni Rodalies, ni un producto de empresa. Proyecto privado de Ralf Roeber. Horarios y retrasos vienen de los feeds públicos de Renfe (CC BY 4.0); el panel de la estación y la realidad pueden no coincidir. Mira el andén con tus ojos. Tú decides esperar o irte. Sin garantía por trenes perdidos o malos días.',
@@ -334,6 +340,9 @@ const dict = {
       'No a l’App Store ni al Play Store. És una web que pots instal·lar al mòbil: obre itren al navegador → menú → Afegeix a la pantalla d’inici (o Instal·la l’app). Queda una icona, obre més ràpid, sense compte. A Android Chrome va bé; a l’iPhone usa Safari → Comparteix → Afegeix a la pantalla d’inici.',
     installBtn: 'Instal·lar app',
     installHint: 'Afegeix itren a la pantalla d’inici. Sense botiga, sense compte.',
+    faqVsQ: 'És com Transporta’m?',
+    faqVsA:
+      'No. Transporta’m és l’app del mapa: on són els trens, andana, molts modes. itren és més petit: origen → destí, proper tren real, clar quan falta el viu, i quan deixar d’esperar (taxi). Poden usar els mateixos feeds de Renfe. Feina diferent. No intentem ser un altre mapa.',
     faqLegalQ: 'És oficial? Hi ha avís legal?',
     faqLegalA:
       'No oficial. No és Renfe, ni Rodalies, ni un producte d’empresa. Projecte privat de Ralf Roeber. Horaris i retards venen dels feeds públics de Renfe (CC BY 4.0); el panell de l’estació i la realitat poden no coincidir. Mira l’andana amb els teus ulls. Tu decides esperar o marxar. Sense garantia per trens perduts o mals dies.',
