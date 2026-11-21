@@ -1,6 +1,56 @@
 @import './styles.tokens.css';
 
-/* Basic interaction: every clickable control shows a hand and eases on hover */
+/*
+ * Desktop (fine pointer): hand cursor on every clickable control.
+ * Phone keeps native cursors; disabled stays not-allowed.
+ */
+@media (pointer: fine) {
+  a[href],
+  a[routerlink],
+  area[href],
+  button:not(:disabled):not([disabled]),
+  summary,
+  select:not(:disabled),
+  label[for],
+  [role='button']:not([aria-disabled='true']),
+  [role='link'],
+  [role='menuitem'],
+  [role='option'],
+  [role='tab'],
+  [role='switch'],
+  [tabindex]:not([tabindex='-1']):not(input):not(textarea),
+  input[type='submit']:not(:disabled),
+  input[type='button']:not(:disabled),
+  input[type='reset']:not(:disabled),
+  input[type='checkbox']:not(:disabled),
+  input[type='radio']:not(:disabled),
+  input[type='file']:not(:disabled),
+  .brand-link,
+  .nav a,
+  .nav-btn,
+  .lang button,
+  .footer-item,
+  .footer-nav a,
+  .footer-nav button,
+  .vote,
+  .quick-chip,
+  .swap,
+  .primary,
+  .ghost,
+  .taxi,
+  .dep-btn,
+  .suggest button,
+  .favs button,
+  .report-actions button,
+  .about-actions a,
+  .about-actions button,
+  .sheet-close,
+  .skip-link {
+    cursor: pointer;
+  }
+}
+
+/* Also without fine-pointer media: buttons/links always advertise clickability */
 button,
 a,
 summary,
@@ -12,8 +62,12 @@ input[type='reset'] {
 }
 
 button:disabled,
+button[disabled],
 input:disabled,
-[aria-disabled='true'] {
+input[disabled],
+[aria-disabled='true'],
+.primary:disabled,
+.ghost:disabled {
   cursor: not-allowed;
 }
 
@@ -29,7 +83,10 @@ input:disabled,
   .primary,
   .ghost,
   .suggest button,
-  .favs button {
+  .favs button,
+  .vote,
+  .dep-btn,
+  .about-actions a {
     transition:
       background-color 0.15s ease,
       border-color 0.15s ease,
