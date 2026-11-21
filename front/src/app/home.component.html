@@ -56,6 +56,9 @@
             </ul>
           }
         </div>
+        @if (fromId()) {
+          <p class="picked" data-testid="from-picked">{{ stationName(fromId()) }}</p>
+        }
       </label>
 
       <button type="button" class="swap" (click)="swap()" [attr.aria-label]="msg('swap')" data-testid="swap">
@@ -95,6 +98,9 @@
             </ul>
           }
         </div>
+        @if (toId()) {
+          <p class="picked" data-testid="to-picked">{{ stationName(toId()) }}</p>
+        }
       </label>
 
       <div class="actions">

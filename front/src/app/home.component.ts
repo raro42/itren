@@ -368,9 +368,12 @@ export class HomeComponent implements OnInit, OnDestroy {
           for (const s of hits) this.knownNames.set(s.id, s.name);
           if (side === 'from') this.fromHits.set(hits);
           else this.toHits.set(hits);
-          // Auto-commit exact / single match while typing (helps phones).
+          // Auto-lock when the typed text uniquely identifies a station
+          // ("El masnou", "masnou", accents). Avoids disabled Show on phones.
           const best = bestStation(q, hits);
-          if (best && fold(best.name) === fold(q)) {
+          const exact = best && fold(best.name) === fold(q);
+          const unique = best && hits.length === 1 && fold(q).length >= 3;
+          if (best && (exact || unique)) {
             if (side === 'from') this.selectFrom(best);
             else this.selectTo(best);
           }
