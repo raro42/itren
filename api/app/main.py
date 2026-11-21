@@ -177,11 +177,11 @@ def next_trains(
     deps = STORE.next_departures(from_st.id, to_st.id, limit=limit)
     now = datetime.now(TZ)
     board = []
-    any_rt = False
+    any_live_delay = False
     for d in deps:
-        if d.realtime:
-            any_rt = True
         delay = d.delay_seconds
+        if d.realtime and delay is not None:
+            any_live_delay = True
         effective = d.scheduled_departure + timedelta(seconds=delay or 0)
         wait_min = max(0, int((effective - now).total_seconds() // 60))
         situation = _situation(wait_min, delay, d.realtime, d.cancelled)
@@ -210,11 +210,12 @@ def next_trains(
     feed_ok = STORE.live_feed_ok()
     feed_age = STORE.live_feed_age_seconds()
     if not deps:
-        live_mode = "unknown"
-    elif any_rt:
+        # Empty board: still report feed health (not "unclear" when the feed is fine).
+        live_mode = "timetable" if feed_ok else "timetable_only"
+    elif any_live_delay:
         live_mode = "live"
     elif feed_ok:
-        live_mode = "timetable"  # feed up, no match for these trips
+        live_mode = "timetable"  # feed up, no delay figure for these trips
     else:
         live_mode = "timetable_only"
 

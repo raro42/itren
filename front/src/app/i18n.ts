@@ -25,8 +25,8 @@ const dict = {
     pickBoth: 'Pick origin and destination first.',
     loading: 'Loading…',
     empty:
-      'No direct train today for this pair. itren does not calculate changes of train yet (for example via Barcelona). Empty list means no through service, not “nothing exists”.',
-    emptyFaq: 'Why no connections? See FAQ',
+      'No direct train today for this pair. itren does not calculate changes of train. Empty means no through service, not that travel is impossible.',
+    emptyFaq: 'Why no changes of train? See FAQ',
     error: 'Could not load trains. Try again.',
     next: 'Next',
     wait: 'in ~{{m}} min',
@@ -168,8 +168,8 @@ const dict = {
     pickBoth: 'Elige origen y destino primero.',
     loading: 'Cargando…',
     empty:
-      'No hay tren directo hoy para este trayecto. itren aún no calcula transbordos (por ejemplo vía Barcelona). Lista vacía = no hay servicio directo, no que “no se pueda viajar”.',
-    emptyFaq: '¿Por qué no hay conexiones? Ver FAQ',
+      'No hay tren directo hoy para este trayecto. itren no calcula transbordos. Lista vacía = no hay servicio directo, no que viajar sea imposible.',
+    emptyFaq: '¿Por qué no hay transbordos? Ver FAQ',
     error: 'No se pudieron cargar los trenes. Reintenta.',
     next: 'Próximo',
     wait: 'en ~{{m}} min',
@@ -311,8 +311,8 @@ const dict = {
     pickBoth: 'Tria origen i destí primer.',
     loading: 'Carregant…',
     empty:
-      'No hi ha tren directe avui per aquest trajecte. itren encara no calcula transbordaments (per exemple via Barcelona). Llista buida = no hi ha servei directe, no que “no es pugui viatjar”.',
-    emptyFaq: 'Per què no hi ha connexions? Veure FAQ',
+      'No hi ha tren directe avui per aquest trajecte. itren no calcula transbordaments. Llista buida = no hi ha servei directe, no que viatjar sigui impossible.',
+    emptyFaq: 'Per què no hi ha transbordaments? Veure FAQ',
     error: 'No s’han pogut carregar els trens. Torna-ho a provar.',
     next: 'Proper',
     wait: 'en ~{{m}} min',

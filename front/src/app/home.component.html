@@ -189,13 +189,19 @@
           {{ liveBannerText() }}
         </p>
 
-        <p class="tap-hint">{{ msg('tapHint') }}</p>
+        @if (res.departures.length) {
+          <p class="tap-hint">{{ msg('tapHint') }}</p>
+        }
 
         @if (!res.departures.length) {
-          <div class="empty-block" data-testid="empty-board">
+          <div class="empty-block" data-testid="empty-board" role="status">
             <p>{{ msg('empty') }}</p>
             <p>
-              <a routerLink="/faq" data-testid="empty-faq-link">{{ msg('emptyFaq') }}</a>
+              <a
+                routerLink="/faq"
+                fragment="faq-change"
+                data-testid="empty-faq-link"
+              >{{ msg('emptyFaq') }}</a>
             </p>
           </div>
         } @else {
